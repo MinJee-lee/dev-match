@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8">
+<th:if test="${ resultPage.currentPage <= resultPage.pageUnit }">
+		◀ 이전
+</th:if>
+<th:if test="${ resultPage.currentPage > resultPage.pageUnit }">
+		<a href="javascript:fncGetUserList('${ resultPage.currentPage-1}')">◀ 이전</a>
+</th:if>
+
+<th:each var="i"  begin="${resultPage.beginUnitPage}" end="${resultPage.endUnitPage}" step="1">
+	<a href="javascript:fncGetUserList('${i}');">${ i }</a>
+</th:each>
+
+<th:if test="${ resultPage.endUnitPage >= resultPage.maxPage }">
+		이후 ▶
+</th:if>
+<th:if test="${ resultPage.endUnitPage < resultPage.maxPage }">
+		<a href="javascript:fncGetUserList('${resultPage.endUnitPage+1}')">이후 ▶</a>
+</th:if>
+
+</html>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper 
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="fileuploadMapper">
+
+	<insert id="uploadFile" parameterType="com.example.demo.common.vo.FileVO">
+	 	INSERT 
+	 	INTO files(
+	 		FILE_NO,
+	 		UPLOAD_FILE_A,
+	 		FILE_SIZE
+	 	    <if test="postNo != 0">
+	 			,POST_NO
+			</if>
+			<if test="projectNo != 0">
+	 			,PROJECT_NO
+			</if>
+			<if test="portfolioNo != 0">
+	 			,PORTFOLIO_NO
+			</if>
+	 	)
+	 	VALUES(
+	 		seq_file_no.NEXTVAL,
+	 		#{uploadFileName},
+	 		#{fileSize}
+			<if test="postNo != 0">
+				,#{postNo}
+			</if>
+			<if test="projectNo != 0">
+				,#{projectNo}
+			</if>
+			<if test="portfolioNo != 0">
+				,#{portfolioNo}
+			</if>
+	 	)
+	 </insert>
+
+</mapper>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--DB 상태확인-->
+<mapper namespace="system.check">
+    <select id="selectDatabaseInfo" resultType="com.example.demo.common.vo.DatabaseInfoVO">
+        SELECT
+            PRODUCT as product,
+            VERSION as version
+        FROM SYS.PRODUCT_COMPONENT_VERSION
+    </select>
+</mapper>

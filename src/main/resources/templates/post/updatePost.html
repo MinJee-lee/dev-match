@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:include="topToolBar.html" ></div>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/lux/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <style>
+        .container {
+            display: grid;
+
+            /*grid-template-columns: 200px;*/
+            /*grid-template-columns: 1fr 1fr 1fr;*/
+            /*grid-template-columns: 100px  2fr  1fr;*/
+
+
+            grid-template-rows:10px 30px 500px;
+            /*grid-template-rows: 200px  1fr 1fr;*/
+
+            row-gap: 10px;
+
+            grid-template-areas:
+                "header"
+                "main"
+                "button";
+
+
+
+
+            /*    position: center;*/
+            /*    top: 0;*/
+            /*    left: 0;*/
+            /*    right: 0;*/
+            /*    bottom: 0;*/
+            /*    margin: 2.5% 30% 10%;*/
+            /*    width: 600px;*/
+        }
+
+        a{
+            color: red;
+        }
+
+        textarea{
+            width: 1150px;
+            height: 500px;
+            resize: none;
+        }
+
+    </style>
+        <script type="text/javascript">
+
+        function fncUpdatePost(){
+            let name = $("input[name='postName']").val();
+
+            if(name == null || name.length <1){
+                    alert("제목은 반드시 입력하셔야 합니다.");
+                    return;
+            }
+            $("form").attr("method", "POST").attr("action","/comm/updatePost").submit();
+
+        }
+
+
+        $(function (){
+            /*    DOM Object GET - $(tagName) / (#id) / $(.className)       */
+            $("#updatePost").on("click", function(){
+                if(confirm("수정하시겠습니까?")){
+                    fncUpdatePost();
+                }
+            });
+        });
+        //
+        // $(function (){
+        //     $("td.ct_btn01:contains('취소')").on("click", function (){
+        //         history.go(-1);
+        //     });
+        // });
+
+    </script>
+
+    <title>게시물 수정</title>
+</head>
+
+<!--<form th:action="@{/post/updatePost}" th:method="get">-->
+<form th:action="@{/comm/updatePost}"   th:method="POST">
+    <div class="container">
+        <!--    <div class="item">A</div>-->
+        <!--    <div class="item">B</div>-->
+        <!--    <div class="item">C</div>-->
+        <br></br>
+    <input type="hidden"    id="postNo"    name="postNo"   th:value="${postVO.postNo}"/>
+
+
+   <input type="text"  name="postName"     th:value="${postVO.postName}">
+   <textarea cols="120" rows="30" name="postContent"  th:text="${postVO.postContent}"></textarea>
+        <div class="update_post_btn"  id="updatePost"  align="right">
+            등록
+        </div>
+<!--        <button type="button"   id="update-reply-btn"   class="btn btn-primary">수정</button>-->
+
+<!--    <input type="submit"    value="완료">-->
+        <a align="right" th:href="@{/comm/getPost(postNo=${postVO.postNo})}">취소</a>
+    </div>
+
+
+</form>
+
+</table>
+</body>
+</html>

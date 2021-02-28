@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="postMapper">
+
+<!--    <sql id="postColumns">-->
+<!--        -->
+<!--    </sql>-->
+    <resultMap id="postSelectMap" type="com.example.demo.community.vo.PostVO">
+        <result property="postNo" column="post_no"  jdbcType="NUMERIC"/>
+        <result property="postName"     column="post_name"      jdbcType="VARCHAR"/>
+        <result property="postContent"      column="post_content"       jdbcType="VARCHAR"/>
+        <result property="userId"       column="user_id"        jdbcType="VARCHAR"/>
+        <result property="regDate"      column="reg_date"       jdbcType="DATE"/>
+        <result property="replyCnt"     column="reply_cnt"      jdbcType="NUMERIC"/>
+<!--        <result property=""-->
+        <result property="viewCnt"      column="view_cnt"       jdbcType="NUMERIC"/>
+
+
+    <collection property="postReply" column="post_no" select="getPostReplyByPostNo"/>
+
+    </resultMap>
+
+    <resultMap id="replySelectMap" type="com.example.demo.community.vo.ReplyVO">
+        <result property="replyNo"  column="reply_no"   jdbcType="NUMERIC"/>
+        <result property="postNo"   column="post_no"    jdbcType="NUMERIC"/>
+        <result property="projectNo"    column="project_no"     jdbcType="NUMERIC"/>
+        <result property="replyUserId"  column="user_id"        jdbcType="VARCHAR"/>
+        <result property="replyContent"     column="reply_content"      jdbcType="VARCHAR"/>
+        <result property="regDate"      column="reg_date"       jdbcType="DATE"/>
+    </resultMap>
+
+    <resultMap id="getReply" type="com.example.demo.community.vo.ReplyVO">
+        <result property="replyNo"  column="reply_no"   jdbcType="NUMERIC"/>
+        <result property="postNo"   column="post_no"    jdbcType="NUMERIC"/>
+        <result property="projectNo"    column="project_no"     jdbcType="NUMERIC"/>
+        <result property="replyContent"     column="reply_content"      jdbcType="VARCHAR"/>
+        <result property="regDate"      column="reg_date"       jdbcType="DATE"/>
+    </resultMap>
+
+    <insert id="addPost" parameterType="com.example.demo.community.vo.PostVO">
+        insert
+        into POST(post_no,
+                  post_name,
+                  post_content,
+                  user_Id,
+                  reg_date,
+                  reply_Cnt,
+                  view_Cnt
+                  )
+        values (SEQ_POST_NO.NEXTVAL,
+                #{postName},
+                #{postContent},
+                #{userId},
+                SYSDATE,
+                #{replyCnt},
+                #{viewCnt})
+    </insert>
+
+    <insert id="addReply"   parameterType="replyVO">
+        insert
+        into REPLY(reply_no,
+                   post_no,
+                   user_id,
+                   reply_content,
+                   reg_date)
+        VALUES (SEQ_REPLY_NO.NEXTVAL,
+                #{postNo},
+                #{replyUserId},
+                #{replyContent},
+                SYSDATE)
+    </insert>
+
+    <select id="getPost"    parameterType="int"     resultMap="postSelectMap">
+        SELECT POST_NO,
+                POST_NAME,
+                POST_CONTENT,
+                USER_ID,
+                REG_DATE,
+                VIEW_CNT,
+                REPLY_CNT
+
+        FROM POST
+        WHERE POST_NO = #{postNo}
+    </select>
+
+    <select id="getReply"       parameterType="replyVO"      resultType="replyVO">
+        SELECT REPLY_NO,
+               POST_NO,
+               USER_ID as replyUserId,
+               REPLY_CONTENT,
+               TO_DATE(TO_CHAR(REG_DATE,'YYYY-MM-DD'),'YYYY-MM-DD') as regDate
+        FROM REPLY
+        WHERE USER_ID = #{replyUserId} AND REPLY_CONTENT = #{replyContent}
+    </select>
+
+
+    <update id="updatePost"     parameterType="com.example.demo.community.vo.PostVO">
+        UPDATE POST
+        SET
+            POST_NAME = #{postName},
+            POST_CONTENT = #{postContent}
+
+        WHERE POST_NO = #{postNo}
+    </update>
+
+    <update id="updateReply"    parameterType="replyVO">
+        UPDATE REPLY
+        set
+            REPLY_CONTENT = #{replyContent}
+
+        WHERE
+        REPLY_NO=#{replyNo}
+    </update>
+
+    <delete id="deletePost"     parameterType="int">
+        DELETE
+
+        FROM POST
+
+        WHERE POST_NO = #{postNo}
+
+    </delete>
+
+    <delete id="deleteReply"    parameterType="int">
+        DELETE
+
+        FROM REPLY
+
+        WHERE REPLY_NO = #{replyNo}
+    </delete>
+
+    <select id="getPostList"    parameterType="searchVO"  resultMap="postSelectMap">
+        SELECT *
+        FROM (SELECT inner_table.*, ROWNUM as row_seq
+            FROM(
+                SELECT POST_NO,
+                        POST_NAME,
+                        POST_CONTENT,
+                        USER_ID,
+                        REG_DATE,
+                        REPLY_CNT,
+                        VIEW_CNT
+                FROM POST
+                <where>
+                    <if test="searchConditionA != null">
+                        <if test="searchConditionA == 1">
+                            POST_NAME Like '%'||#{searchKeyword}||'%'
+                        </if>
+                        <if test="searchConditionA == 2" >
+                            POST_CONTENT LIKE '%'||#{searchKeyword}||'%'
+                        </if>
+                        <if test="searchConditionA == 3">
+                            USER_ID LIKE '%'||#{searchKeyword}||'%'
+                        </if>
+                    </if>
+                </where>
+                ORDER BY POST_NO ) inner_table
+            WHERE ROWNUM &lt;=#{endRowNum} )
+        WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum}
+    </select>
+
+    <select id="getPostReplyByPostNo"   resultType="replyVO">
+        select REPLY_NO as replyno,
+               USER_ID as replyuserid,
+               REPLY_CONTENT as replycontent,
+               REG_DATE as reg_date
+        FROM REPLY
+        WHERE POST_NO = #{postNo}
+    </select>
+
+    <select id="getTotalCount"  parameterType="pageVO"    resultType="int">
+        SELECT COUNT(*)
+        FROM POST
+    </select>
+
+<!--    조회수 +1-->
+    <update id="plusViewCnt"    parameterType="int">
+        UPDATE  POST
+        SET View_Cnt = View_Cnt +1
+        WHERE POST_NO = #{postNo}
+    </update>
+
+<!--    댓글수 총 카운팅-->
+<!--    <update id="totalReplyCnt"  parameterType="int">-->
+<!--        UPDATE POST-->
+<!--        SET REPLY_CNT = REPLY_CNT +1-->
+<!--        WHRER POST_NO = #{postNo}-->
+<!--    </update>-->
+
+
+</mapper>

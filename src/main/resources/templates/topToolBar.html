@@ -1,0 +1,107 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: main-head">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/welcome">SPRING</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+                    aria-controls="navbarColor01" aria-expanded="true" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarColor01" style="">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">PROJECT</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/project/addProject">프로젝트 등록</a>
+                            <a class="dropdown-item" href="/project/getProjectList">프로젝트 찾기</a>
+                            <a class="dropdown-item" href="/project/myProject">내 프로젝트</a>
+                            <a class="dropdown-item" href="/applicant/appliedProjectList">신청한 프로젝트</a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">커뮤니티</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/comm/addPost">게시물 작성</a>
+                            <a class="dropdown-item" href="/comm/getPostList">게시물 목록</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">ex</a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/port/portList">포트폴리오</a>
+                    </li>
+
+                    <th:block th:if="${session.user != null && session.user.role.equals('ADMIN')}">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false">관리자메뉴</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/admin/member/list">전체회원목록</a>
+                                <a class="dropdown-item" href="/admin/member/list/black">블랙리스트</a>
+                                <a class="dropdown-item" href="/admin/member/list/dormant">비 활성화 회원 목록</a>
+                            </div>
+                        </li>
+                    </th:block>
+
+                    <th:block th:if="${session.user == null}">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="/login" style="color : #fff">로그인</a>
+                        </li>
+                    </th:block>
+                    <th:block th:if="${session.user != null}">
+                        <li id="nav-profile-box" class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                               aria-haspopup="true" aria-expanded="false">
+                                <img id="nav-profile-image" th:src="|/resources/uploadImg/${session.user.profileImg}|"
+                                     alt="profile_img">
+                                <span id="nav-login-id" th:text="${session.user.userId}"></span>
+                            </a>
+
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item"
+                                   th:href="@{/profile/getAllMyProfile(userId=${session.user.userId})}">내 프로필</a>
+                                <a class="dropdown-item"
+                                   th:href="@{/profile/getMyProfile(userId=${session.user.userId})}">기본 정보</a>
+                                <a class="dropdown-item" href="/profile/getReviewList">리뷰 목록</a>
+
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout">로그아웃</a>
+                            </div>
+                        </li>
+                    </th:block>
+                </ul>
+            </div>
+        </div>
+    </nav>
+	
+
+	
+    <script>
+        function navigo() {
+            const header = document.querySelector('body');
+            const headerheight = header.clientHeight;
+            document.addEventListener('scroll', onScroll, {passive: true});
+
+            function onScroll() {
+                const scrollposition = pageYOffset;
+                const nav = document.querySelector('nav');
+                if (headerheight <= scrollposition) {
+                    nav.classList.add('fix')
+                } else {
+                    nav.classList.remove('fix');
+                }
+            }
+
+        }
+
+        navigo()
+    </script>
+</html>

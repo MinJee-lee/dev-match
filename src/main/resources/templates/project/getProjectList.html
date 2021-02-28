@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>프로젝트 찾기</title>
+
+    <link rel="stylesheet" href="/resources/css/additional.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.6/css/all.css">
+
+</head>
+<div th:include="topToolBar.html"></div>
+<body>
+
+<div class="container">
+
+    <div class="row mt-5 mb-5">
+        <div class="col-lg-3 pt-5" style="text-align: center;">
+            <a href="/project/getProjectList"><h4>프로젝트 찾기</h4></a>
+        </div>
+        <div class="col-lg-9 pt-5 float-right">
+            <button class="btn btn-secondary ml-2 float-right" id="search-btn" type="submit">Search</button>
+            <input class="form-control w-50 ml-2 float-right" type="text" id="searchKeyword" name="searchKeyword"
+                   placeholder="Search">
+            <div class="float-right">
+                <select class="form-control" id="searchCondition" name="searchCondition">
+                    <option value="1">제목</option>
+                    <option value="2">해시태그</option>
+                    <option value="3">내용</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="category-box col-lg-3">
+            <input type="hidden" id="userId" th:value="${session.user.userId}">
+            <div class="searchCondition-list">
+                <div class="mt-2 mb-4">
+                    <h6><strong>프로젝트 카테고리</strong></h6>
+                    <hr/>
+                    <div class="custom-control custom-checkbox">
+                        <input th:checked="${checkedStatus.projectCategory!=null and checkedStatus.projectCategory.contains(1)}"
+                               type="checkbox" class="custom-control-input" name="projectCategory" id="category1"
+                               value="1">
+                        <label class="custom-control-label" for="category1">개발</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input th:checked="${checkedStatus.projectCategory!=null and checkedStatus.projectCategory.contains(2)}"
+                               type="checkbox" class="custom-control-input" name="projectCategory" id="category2"
+                               value="2">
+                        <label class="custom-control-label" for="category2">기획</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input th:checked="${checkedStatus.projectCategory!=null and checkedStatus.projectCategory.contains(3)}"
+                               type="checkbox" class="custom-control-input" name="projectCategory" id="category3"
+                               value="3">
+                        <label class="custom-control-label" for="category3">디자인 </label>
+                    </div>
+                </div>
+
+                <div class="mt-2 mb-4">
+                    <h6><strong>미팅 방식</strong></h6>
+                    <hr/>
+                    <div class="custom-control custom-checkbox">
+                        <input th:checked="${checkedStatus.meetingMethod!=null and checkedStatus.meetingMethod.contains(1)}"
+                               type="checkbox" class="custom-control-input" name="meetingMethod" id="meeting1"
+                               value="1">
+                        <label class="custom-control-label" for="meeting1">대면</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input th:checked="${checkedStatus.meetingMethod!=null and checkedStatus.meetingMethod.contains(2)}"
+                               type="checkbox" class="custom-control-input" name="meetingMethod" id="meeting2"
+                               value="2">
+                        <label class="custom-control-label" for="meeting2">비대면</label>
+                    </div>
+                </div>
+
+                <div class="mt-2 mb-4">
+                    <h6><strong>프로젝트 진행상태</strong></h6>
+                    <hr/>
+                    <div class="custom-control custom-checkbox">
+                        <input th:checked="${checkedStatus.projectStatus!=null and checkedStatus.projectStatus.contains(1)}"
+                               type="checkbox" class="custom-control-input" name="projectStatus" id="status1"
+                               value="1">
+                        <label class="custom-control-label" for="status1">모집중</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input th:checked="${checkedStatus.projectStatus!=null and checkedStatus.projectStatus.contains(2)}"
+                               type="checkbox" class="custom-control-input" name="projectStatus" id="status2"
+                               value="2">
+                        <label class="custom-control-label" for="status2">모집완료</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input th:checked="${checkedStatus.projectStatus!=null and checkedStatus.projectStatus.contains(3)}"
+                               type="checkbox" class="custom-control-input" name="projectStatus" id="status3"
+                               value="3">
+                        <label class="custom-control-label" for="status3">종료</label>
+                    </div>
+                </div>
+            </div>
+            <div id="line"></div>
+        </div>
+
+
+        <div class="card-list-box col-lg-9">
+            <div class="searchCondition-list" style="width: 100%">
+                <span style="margin: 0 20px;">리스트 정렬 기준</span>
+                <div id="btn-box" class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-primary active">
+                        <input type="radio" name="options" id="option1" autocomplete="off" checked=""> 최신 등록
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option2" autocomplete="off">모집 마감 임박
+                    </label>
+                    <label class="btn btn-outline-primary">
+                        <input type="radio" name="options" id="option3" autocomplete="off">조회수 높은
+                    </label>
+                </div>
+            </div>
+
+            <div class="project-box" th:each="project : ${projectList}">
+                <div class="card">
+                    <div class="card-body" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        <div class="float-left w-75">
+                            <th:block th:switch="${project.projectStatus}">
+                                <div th:case="1">
+                                    <span class="badge badge-success">모집중</span>
+                                </div>
+                                <div th:case="2">
+                                    <span class="badge badge-primary">모집완료</span>
+                                </div>
+                                <div th:case="3">
+                                    <span class="badge badge-danger">종료</span>
+                                </div>
+                            </th:block>
+                            <h4 class="card-title h-100 in-card-project-name"
+                                style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                <a th:href="@{/project/getProject(projectNo=${project.projectNo})}"
+                                   th:text="${project.projectName}"></a>
+                            </h4>
+                        </div>
+                        <div th:switch="${project.bookmarkNo}" class="float-right w-25" style="text-align:right;">
+                            <button name="bookmarkControl" th:case="0" class="btn btn-link"
+                                    th:value="1" th:data-bookmarkno="${project.bookmarkNo}"
+                                    th:data-projectno="${project.projectNo}" style="background-color: #fff">
+                                <img src="/resources/img/btn-icon-like-off.png" style="width:32px; height:32px;">
+                            </button>
+                            <button name="bookmarkControl" th:case="*" class="btn btn-link"
+                                    th:value="2" th:data-bookmarkno="${project.bookmarkNo}"
+                                    th:data-projectno="${project.projectNo}" style="background-color: #fff">
+                                <img src="/resources/img/btn-icon-like-on.png" style="width:32px; height:32px;">
+                            </button>
+                        </div>
+                        <div class="card-text"
+                             th:text="${project.projectDetail}"></div>
+                        <div class="float-right in-card-project-info">
+                            <span class="float-left w-50">팀장명</span>
+                            <span class="float-right w-50" th:text="${project.leaderId}"></span>
+                            <br/>
+                            <span class="float-left w-50">마감일</span>
+                            <span class="float-right w-50"
+                                  style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+                                  th:text="${#dates.format(project.applicationDeadline, 'YYYY-MM-dd')}"></span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="float-left in-card-category">
+                            <small class="text-muted">
+                                <th:block th:switch="${project.projectCategory}">
+                                    <span th:case="1">개발</span>
+                                    <span th:case="2">기획</span>
+                                    <span th:case="3">디자인</span>
+                                </th:block>
+                            </small>
+                        </div>
+                        <div class="float-left pl-2 border-left in-card-locate">
+                            <small class="text-muted">
+                                <th:block th:if="${project.meetingMethod == 1}">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span th:text="${project.meetingLocation}"/>
+                                </th:block>
+                                <th:block th:if="${project.meetingMethod == 2}">
+                                    <i class="fas fa-laptop"></i>
+                                    <span th:if="${project.meetingMethod == 2}">비대면 (온라인)</span>
+                                </th:block>
+                            </small>
+                        </div>
+
+                        <div class="float-left pl-2 border-left in-card-hashtag">
+                            <th:block th:if="${project.skillHashTag != null}">
+                                <small class="hashtag"
+                                       th:each="tag : ${project.skillHashTag.split('  ')}" th:text="'#'+${tag}">
+                                </small>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    let currentPage = 1;
+    window.onscroll = function (e) {//추가 임시콘텐츠
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+            //실행할 로직(컨텐츠 추가)
+            currentPage++;
+            // let param = categoryListJSON();
+
+            // let searchCondition = JSON.stringify(param)
+            // searchCondition += "currentPage:"+currentPage+",pageSize : 10}"
+            // param += '"currentPage":\"'+currentPage+'\","pageSize" : \"10\"}'
+
+            // console.log(param);
+            $.ajax({
+                type: 'POST',
+                url: '/project/getProjectList',
+                data: JSON.stringify({
+                    currentPage: currentPage,
+                    pageSize: 10
+                }),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data == '') {
+                        alert("마지막 페이지 입니다.")
+                        currentPage--;
+                    } else {
+                        let array = data;
+                        let html = "";
+
+                        for (i in array) {
+                            html += createCardBox(array[i]);
+                        }
+
+                        $(".card-list-box").append(html);
+                    }
+
+                },
+            })
+
+            // //article에 추가되는 콘텐츠를 더함
+            // $('article').append(addCount);
+        }
+    };
+
+
+    $('.searchCondition-list').find('input[type=checkbox]').click(function () {
+        let parameter = categoryList();
+        window.location.replace("/project/getProjectList?" + parameter);
+    })
+
+    $('button[name=bookmarkControl]').on("click", function bookmarkControl() {
+        $.ajax({
+            type: 'POST',
+            url: '/project/addBookmark',
+            data: JSON.stringify({
+                userId: $('#userId').val(),
+                projectNo: $(this).attr("data-projectno"),
+                bookmarkNo: $(this).attr("data-bookmarkno"),
+                bookmarkControl: $(this).val()
+            }),
+            context: this,
+            contentType: 'application/json',
+            success: function (data) {
+
+                if ($(this).val() == "1") {
+                    $(this).attr('value', 2);
+                    $(this).attr('data-bookmarkno', data);
+                    $(this).children().attr('src', '/resources/img/btn-icon-like-on.png')
+                } else {
+                    $(this).attr('value', 1);
+                    $(this).attr('data-bookmarkno', 0);
+                    $(this).children().attr('src', '/resources/img/btn-icon-like-off.png')
+                }
+
+            },
+            error: function (e) {
+                alert("북마크 추가 실패 = " + e)
+            }
+        });
+    })
+
+    $("#searchKeyword").keypress(function (e) {
+        if (e.keyCode === 13) {
+            window.location.replace("/project/getProjectList?searchCondition=" + $('#searchCondition').val() + "&searchKeyword=" + $('#searchKeyword').val());
+        }
+    });
+
+    $('#search-btn').click(function () {
+        window.location.replace("/project/getProjectList?searchCondition=" + $('#searchCondition').val() + "&searchKeyword=" + $('#searchKeyword').val());
+    })
+
+    function categoryList() {
+        let searchList = new Array();
+
+        $("input[name=projectCategory]:checked").each(function (i) {
+            searchList.push("projectCategory=" + $(this).val());
+        })
+
+        $("input[name=meetingMethod]:checked").each(function (i) {
+            searchList.push("meetingMethod=" + $(this).val());
+        })
+
+        $("input[name=projectStatus]:checked").each(function (i) {
+            searchList.push("projectStatus=" + $(this).val());
+        })
+
+        let param = "";
+        searchList.forEach(element => param += element + "&");
+
+        return param;
+
+    }
+
+    function categoryListJSON() {
+
+        let searchList = new Array();
+        $("input[name=projectCategory]:checked").each(function (i) {
+            searchList.push('\"projectCategory\":\"' + $(this).val() + '\"');
+        })
+
+        $("input[name=meetingMethod]:checked").each(function (i) {
+            searchList.push('\"meetingMethod\":\"' + $(this).val() + '\"');
+        })
+
+        $("input[name=projectStatus]:checked").each(function (i) {
+            searchList.push('\"projectStatus\":\"' + $(this).val() + '\"');
+        })
+
+        let param = '{';
+        searchList.forEach(element => param += element + ",");
+        return param;
+
+
+    }
+
+    function createCardBox(elem) {
+        let html = `<div class="project-box">
+                <div class="card">
+                    <div class="card-body" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        <div class="float-left w-75">
+                            <div>`
+
+        switch (elem.projectStatus) {
+            case 1 :
+                html += '<span class="badge badge-success">모집중</span>'
+                break;
+
+            case 2 :
+                html += '<span class="badge badge-primary">모집완료</span>'
+                break;
+
+            case 3 :
+                html += '<span class="badge badge-danger">종료</span>'
+                break;
+
+        }
+        html += `</div>
+                            <h4 class="card-title h-100 in-card-project-name" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                <a href="/project/getProject?projectNo=` + elem.projectNo + `">` + elem.projectName + `</a>
+                            </h4>
+                        </div>
+                        <div class="float-right w-25" style="text-align:right;">
+                            <button name="bookmarkControl" class="btn btn-link" `
+
+        if (elem.bookmarkNo == 0) {
+            html += `value="1" data-bookmarkno="0" data-projectno="` + elem.projectNo + `" style="background-color: #fff"> <img src="/resources/img/btn-icon-like-off.png" style="width:32px; height:32px;">`
+        } else {
+            html += `value="2" data-bookmarkno="` + elem.bookmarkNo + `" data-projectno="` + elem.projectNo + `" style="background-color: #fff" <img src="/resources/img/btn-icon-like-on.png" style="width:32px; height:32px;">`
+        }
+
+
+        html += `</button>
+                        </div>
+                        <div class="card-text float-left in-card-project-detail">` + elem.projectDetail + `</div>
+                        <div class="float-right in-card-project-info">
+                            <span class="float-left w-50">팀장명</span>
+                            <span class="float-right w-50">` + elem.leaderId + `</span>
+                            <br>
+                            <span class="float-left w-50">마감일</span>
+                            <span class="float-right w-50" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">` + elem.applicationDeadline.substring(0, 10) + `</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="float-left in-card-category">
+                            <small class="text-muted">`
+
+        switch (elem.projectCategory) {
+            case 1 :
+                html += '<span>개발</span>'
+                break;
+
+            case 2 :
+                html += '<span>기획</span>'
+                break;
+
+            case 3 :
+                html += '<span>디자인</span>'
+                break;
+
+        }
+        html += `</small>
+                        </div>
+                        <div class="float-left pl-2 border-left in-card-locate">
+                            <small class="text-muted">`
+
+        if (elem.meetingMethod == 1) {
+            html += `<i className="fas fa-map-marker-alt"></i><span>` + elem.meetingLocation + `</span>`
+        } else {
+            html += `<i class="fas fa-laptop"></i><span>비대면 (온라인)</span>`
+        }
+
+        html += `</small>
+                        </div>
+
+                    </div>
+                </div>
+            </div>`
+
+        return html;
+    }
+
+
+</script>
+</body>
+</html>

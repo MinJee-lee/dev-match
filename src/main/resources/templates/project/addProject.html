@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="/resources/css/additional.css">
+    <title>프로젝트 등록하기</title>
+
+
+
+</head>
+
+<body>
+<nav th:include="topToolBar.html"></nav>
+<div class="container" style="margin-bottom: 200px">
+    <div class="row">
+
+        <!-- left side bar -->
+        <div class="container col-lg-2 col-md-12 ml-2 ">
+
+            <div id="followquick" class="page-name col-xs-12">
+                <h4 class="mb-3">ADD PROJECT FORM</h4>
+                <div class="statusCheck">
+                    <input type="text" id="input-check-1" value="기본 정보" class="form-control" disabled=""
+                           style="border:none; background-color: #fff; margin-bottom: 5px;">
+                </div>
+                <div class="statusCheck">
+                    <input type="text" id="input-check-2" value="프로젝트 분류" class="form-control" disabled=""
+                           style="border:none; background-color: #fff; margin-bottom: 5px;">
+                </div>
+                <div class="statusCheck">
+                    <input type="text" id="input-check-3" value="프로젝트 정보" class="form-control" disabled=""
+                           style="border:none; background-color: #fff; margin-bottom: 5px;">
+                </div>
+                <div class="statusCheck">
+                    <input type="text" id="input-check-4" value="추가 정보" class="form-control" disabled=""
+                           style="border:none; background-color: #fff; margin-bottom: 5px;">
+                </div>
+                <div class="statusCheck">
+                    <input type="text" id="input-check-5" value="모집 요건" class="form-control" disabled=""
+                           style="border:none; background-color: #fff; margin-bottom: 5px;">
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- right form data -->
+        <div class="container col-lg-9 col-md-12 mr-1 ml-1">
+            <form id="addProjectForm" method="POST" th:action="@{/project/addProject}" enctype="multipart/form-data">
+                <input type="hidden" name="leaderId" th:value="${session.user.userId}"/>
+
+
+                <!-- 기본 정보 -->
+                <div class="form-group row"><h4 class="col-lg-12 form-group-header">기본 정보</h4></div>
+                <div class="field item form-group row">
+                    <label class="col-form-label col-lg-4 col-md-4  label-align" style="text-align: left"><strong>프로젝트
+                        제목</strong><span
+                            class="required">*</span></label>
+                    <div class="col-lg-8 col-md-8">
+                        <input class="form-control" data-validate-length-range="6" data-validate-words="2"
+                               data-parsley-minlength="15" data-parsley-maxlength="30" data-parsley-trigger="keyup"
+                               data-parsley-validation-threshold="1"
+                               name="projectName" placeholder="예) SpringBoot를 활용한 쇼핑몰 플랫폼 구축" autocomplete="off"
+                               required="required">
+                    </div>
+                </div>
+
+                <div class="field item form-group row">
+                    <label class="col-form-label col-lg-4 col-md-4  label-align" style="text-align: left"><strong>예상
+                        시작일</strong> <span
+                            class="required">*</span></label>
+                    <div class="col-lg-8 col-md-8">
+                        <input id="preStartDate" name="preStartDate" class="date-picker form-control"
+                               placeholder="yyyy-mm-dd" type="date" required="required" onfocus="this.type='date'"
+                               onmouseover="this.type='date'" onclick="this.type='date'" onblur="this.type='text'">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-4 " for="recruitmentMemberCnt"><strong>모집 인원 수</strong></label>
+                    <div class="col-md-8 col-sm-8 ">
+                        <select class="form-control" id="recruitmentMemberCnt" name="recruitmentMemberCnt">
+                            <option value="1" selected>1 명</option>
+                            <option value="2">2 명</option>
+                            <option value="3">3 명</option>
+                            <option value="4">4 명</option>
+                            <option value="5">5 명</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <!-- 프로젝트 분류 -->
+                <div class="form-group row"><h4 class="col-lg-12 form-group-header">프로젝트 분류</h4></div>
+                <div class="form-group" style="display: block">
+                    <label class="control-label"><strong>프로젝트 진행 분류</strong></label>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="customRadio1" name="progressClassification" class="custom-control-input"
+                               value="1" checked>
+                        <label class="custom-control-label" for="customRadio1">신규프로젝트를 진행하려고 합니다.</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="customRadio2" name="progressClassification" class="custom-control-input"
+                               value="2">
+                        <label class="custom-control-label" for="customRadio2">기존프로젝트 유지보수를 하려고 합니다.</label>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-4"><strong>프로젝트 카테고리</strong></label>
+                    <div class="btn-group btn-group-toggle col-md-8" data-toggle="buttons">
+                        <label class="btn btn-outline-primary active" style="margin-right: 5px">
+                            <input type="radio" name="projectCategory" id="projectCategory1" value="1" checked=""> 개발
+                        </label>
+                        <label class="btn btn-outline-primary" style="margin-right: 5px">
+                            <input type="radio" name="projectCategory" id="projectCategory2" value="2"> 기획
+                        </label>
+                        <label class="btn btn-outline-primary">
+                            <input type="radio" name="projectCategory" id="projectCategory3" value="3"> 디자인
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field item form-group row">
+                    <label class="col-form-label col-lg-4 col-md-4 label-align" style="text-align: left">예상진행기간<span
+                            class="required">*</span></label>
+                    <div class="col-lg-8 col-md-8">
+                        <div class="input-group mb-3">
+                            <input type="text" id="prePeriod" name="prePeriod" class="form-control"
+                                   placeholder="ex) 100" required>
+                            <div class="input-group-append">
+                                <span class="input-group-text">일</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row"><h4 class="col-lg-12 form-group-header">프로젝트 상세정보</h4></div>
+                <div class="form-group row">
+                    <textarea class="summernote col-md-12" name="detailHtml"></textarea>
+                </div>
+                <input type="hidden" id="projectDetail" name="projectDetail">
+
+
+
+                <div class="form-group row">
+                    <div class="mb-5 col-md-11">
+                        <div class="custom-file">
+                            <label class="custom-file-label" for="file-upload" style="text-align: center">+ 프로젝트 관련자료 추가</label>
+                            <input type="file" name="files" id="file-upload" multiple="multiple">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <span><b id="fileEA">0</b>개의 문서 파일 & <b id="imageEA">0</b> 개의 이미지 선택</span><br/>
+                    </div>
+                    <div id="elseFile" class="col-md-12 p-3 mt-3" style="border-radius: 10px;"></div>
+                </div>
+
+
+
+                <!-- 추가 정보 -->
+                <div class="form-group row"><h4 class="col-lg-12 form-group-header">추가 정보</h4></div>
+                <div class="form-group control-group row">
+                    <label class="control-label col-md-4 col-sm-4 ">Skill Tags</label>
+                    <div class="col-md-8 col-sm-8 ">
+                        <label for="tags_1"></label><input id="tags_1" type="text" class="tags form-control" value=""/>
+                        <div id="suggestions-container"
+                             style="position: relative; float: left; width: 250px; margin: 10px;">
+                            <input type="hidden" id="skillHashTag" name="skillHashTag">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">미팅 방식</label>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="meetingMethod1" name="meetingMethod" class="custom-control-input"
+                               value="1"
+                               checked="">
+                        <label class="custom-control-label" for="meetingMethod1">온라인 미팅 ( 카카오톡 , 화상채팅 등)</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="meetingMethod2" name="meetingMethod" class="custom-control-input"
+                               value="2">
+                        <label class="custom-control-label" for="meetingMethod2">오프라인 미팅</label>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="meetingLocation1">미팅 위치</label>
+                    <select class="form-control" id="meetingLocation1" name="meetingLocation">
+                        <option value="선택안함" selected> 시 / 도</option>
+                        <option value="서울특별시">서울특별시</option>
+                        <option value="부산광역시">부산광역시</option>
+                        <option value="대구광역시">대구광역시</option>
+                        <option value="인천광역시">인천광역시</option>
+                        <option value="광주광역시">광주광역시</option>
+                        <option value="대전광역시">대전광역시</option>
+                        <option value="울산광역시">울산광역시</option>
+                        <option value="세종특별자치시">세종특별자치시</option>
+                        <option value="경기도">경기도</option>
+                        <option value="강원도">강원도</option>
+                        <option value="충청북도">충청북도</option>
+                        <option value="충청남도">충청남도</option>
+                        <option value="전라북도">전라북도</option>
+                        <option value="전라남도">전라남도</option>
+                        <option value="경상북도">경상북도</option>
+                        <option value="경상남도">경상남도</option>
+                        <option value="제주특별자치도">제주특별자치도</option>
+                        <option value="해외">해외</option>
+                    </select>
+                </div>
+
+
+                <div class="form-group row"><h4 class="col-lg-12 form-group-header">모집 요건</h4></div>
+                <div class="field item form-group row">
+                    <label class="col-form-label col-lg-4 col-md-4  label-align" style="text-align: left">신청서 제출 마감일
+                        <span class="required">*</span></label>
+                    <div class="col-lg-8 col-md-8">
+                        <input id="applicationDeadline" name="applicationDeadline" class="date-picker form-control"
+                               placeholder="yyyy-mm-dd" type="date" required="required" onfocus="this.type='date'"
+                               onmouseover="this.type='date'" onclick="this.type='date'" onblur="this.type='text'">
+                    </div>
+                </div>
+
+                <div class="form-group" id="question-group">
+                    <label class="control-label">신청자 지원 전 질문사항 등록<br/><small>(최대 3개 까지 등록가능)</small></label>
+                    <div class="applicantQuestion">
+                        <input type="text" name="applicantQuestionA" class="form-control col-lg-10 col-md-10"
+                               placeholder="예) 스프링부트 관련 프로젝트를 진행해본적이 있나요?"/>
+                        <div class="col-lg-2 col-md-2 add-question-btn" onclick="javascript:addQuestion(this)">
+                            <span class="glyphicon glyphicon-plus"
+                                  style="margin-top: 5px;margin-bottom: 10px;font-size: 19px;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" id="addProject-btn" class="btn btn-outline-primary col-12 mt-5" value="등록완료"/>
+                </div>
+            </form>
+
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+<script>
+    $('.summernote').summernote({
+        height: 300,
+        lang: "ko-KR",
+        focus : true,
+        callbacks: {
+            onImageUpload: function(files, editor, welEditable) {
+                for (var i = files.length - 1; i >= 0; i--) {
+                    sendFile(files[i], this);
+                }
+            }
+        },
+        toolbar: [
+            // 글꼴 설정
+            ['fontname', ['fontname']],
+            // 글자 크기 설정
+            ['fontsize', ['fontsize']],
+            // 굵기, 기울임꼴, 밑줄,취소 선, 서식지우기
+            ['style', ['bold', 'italic', 'underline','strikethrough', 'clear']],
+            // 글자색
+            ['color', ['forecolor','color']],
+            // 표만들기
+            ['table', ['table']],
+            // 글머리 기호, 번호매기기, 문단정렬
+            ['para', ['ul', 'ol', 'paragraph']],
+            // 줄간격
+            ['height', ['height']],
+            // 그림첨부, 링크만들기, 동영상첨부
+            ['insert',['picture','link']],
+            // 코드보기, 확대해서보기, 도움말
+            ['view', ['codeview']]
+        ],
+        // 추가한 글꼴
+        fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋음체','바탕체'],
+        // 추가한 폰트사이즈
+        fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72']
+
+    });
+
+    function sendFile(file, el) {
+        var form_data = new FormData();
+        form_data.append('file', file);
+        $.ajax({
+            data: form_data,
+            type: "POST",
+            url: '/fileUpload',
+            cache: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            processData: false,
+            success: function(img_name) {
+                $(el).summernote('editor.insertImage', img_name);
+            }
+        });
+    }
+
+</script>
+
+<script>
+    // 등록 전 유효성 검사 필수항목
+    let validator = new FormValidator({"events": ['blur', 'input', 'change']}, document.forms[0]);
+    // on form "submit" event
+    document.forms[0].onsubmit = function (e) {
+
+        let submit = true,
+            validatorResult = validator.checkAll(this);
+        return !!validatorResult.valid;
+    };
+
+    // 날짜 선택 ( 최소날짜 오늘로 설정 )
+    let today = new Date().toISOString().substring(0, 10);
+    $("#preStartDate").attr('min', today);
+    $("#applicationDeadline").attr('min', today);
+
+    $('#addProject-btn').on('click', function () {
+        $('#projectDetail').val($('.note-editable').text())
+        $('#skillHashTag').val($('.tag span').text());
+        $('#addProjectForm').submit();
+    })
+
+    // 신청자 질문사항 추가
+    function addQuestion(elem) {
+        let questionCount = $('div[class=applicantQuestion]').length;
+        let html = `<div class="applicantQuestion">
+                        <input type="text" class="form-control col-lg-10 col-md-10"/>
+                        <div class="col-lg-1 col-md-1 delete-question-btn" onclick="javascript:deleteQuestion(this)">
+                            <span class="glyphicon glyphicon-remove-circle" style="margin-top: 5px;margin-bottom: 10px;font-size: 19px;"></span>
+                        </div>`
+        if (questionCount < 2) {
+            html += `<div class="col-lg-1 col-md-1 add-question-btn" onclick="javascript:addQuestion(this)">
+                            <span class="glyphicon glyphicon-plus" style="margin-top: 5px;margin-bottom: 10px;font-size: 19px;"></span>
+                        </div>
+                    </div>`
+        } else {
+            html += `
+                    </div>`
+        }
+
+
+        $(elem).children().attr('class', 'glyphicon glyphicon-remove-circle');
+        $(elem).attr('onclick', 'javascript:deleteQuestion(this)');
+        if (questionCount == 1) {
+            $(elem).attr('class', 'col-lg-1 col-md-1 delete-question-btn');
+        }
+        $("#question-group div[class=applicantQuestion]").each(function (i, element) {
+            $(element).children('div[class*=add-question-btn]').css('display', 'none')
+        });
+
+
+        $('#question-group').append(html);
+
+        indexReset()
+
+    }
+
+    function deleteQuestion(elem) {
+        const target = $(elem).parent();
+
+        target.remove();
+
+        let questionCount = $('div[class=applicantQuestion]').length;
+        if (questionCount == 2) {
+            $('div[class=applicantQuestion]').children('div[class*=add-question-btn]').css('display', 'block');
+            $('div[class=applicantQuestion]').children('div[class*=add-question-btn]').attr('onclick', 'javascript:addQuestion(this)');
+            $('div[class=applicantQuestion]').children('div[class*=add-question-btn]').children().attr('class', 'glyphicon glyphicon-plus');
+        } else if (questionCount == 1) {
+            $('div[class=applicantQuestion]').children('div[class*=add-question-btn]').css('display', 'block');
+            $('div[class=applicantQuestion]').children('div[class*=question-btn]').attr('onclick', 'javascript:addQuestion(this)');
+            $('div[class=applicantQuestion]').children('div[class*=question-btn]').children().attr('class', 'glyphicon glyphicon-plus');
+        }
+
+        indexReset()
+    }
+
+    function indexReset() {
+        let toIndex = ['A', 'B', 'C'];
+        $("#question-group div[class=applicantQuestion]").each(function (i, element) {
+            let toName = 'applicantQuestion' + toIndex[i]
+            $(element).children('input[type=text]').attr('name', toName)
+            $(element).children('input[type=text]').attr('placeholder', toName)
+        });
+
+    }
+
+
+
+
+    let sel_files = [];
+
+    $("#file-upload").on("change", function handleImgsFilesSelect(e) {
+        let files = e.target.files;
+        let filesArr = Array.prototype.slice.call(files);
+
+        $("#elseFile").empty();
+        for (let i = 0; i < files.length; i++) {
+            if (!checkExtension(files[i].name, files[i].size)) {
+                return false;
+            }
+        }
+
+        $('elseFile').empty();
+        $('#fileEA').text('0');
+        $('#imageEA').text('0');
+        let fileEA = 0;
+        let imageEA = 0;
+
+        filesArr.forEach(function (f) {
+
+            if (f.type.match("image.*")) {
+                sel_files.push(f);
+                imageEA ++;
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    let img_html = "<img class=\"d-inline-block mr-2\" src=\"" + e.target.result + "\" data-filename=\"" + f.name + "\" style=\"width: 100px; height: 100px;\" >"
+                    $("#elseFile").append(img_html);
+                }
+                reader.readAsDataURL(f);
+            } else {
+                fileEA ++;
+                let fileName = f.name;
+
+                let img_html = "<img class=\"d-inline-block mr-2\" src=\"/resources/img/file.png\" style=\"width: 100px; height: 100px;\" >"
+                $("#elseFile").append(img_html);
+
+            }
+
+        });
+        $('#fileEA').text(fileEA);
+        $('#imageEA').text(imageEA);
+    });
+
+    function checkExtension(fileName, fileSize) {
+
+        let regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
+        let maxSize = 41943040;  //40MB
+
+        if (fileSize >= maxSize) {
+            alert('파일 사이즈 초과');
+            $("input[type='file']").val("");  //파일 초기화
+            return false;
+        }
+
+        if (regex.test(fileName)) {
+            alert('업로드 불가능한 파일이 있습니다.');
+            $("input[type='file']").val("");  //파일 초기화
+            return false;
+        }
+        return true;
+    }
+
+
+    $('#followquick').animate({'top': $(document).scrollTop() + 100 + 'px'});
+    //follow quick menu
+    $(window).scroll(function () {
+        $("#followquick").stop();
+        $('#followquick').animate({'top': $(document).scrollTop() + 100 + 'px'}, 700);
+
+    });
+
+    $('form').change(function () {
+
+        if ($('#input-check-1').attr('class') == 'form-control') {
+            if ($('input[name=projectName]').val() != '' && $('#preStartDate').val() != '') {
+                $('#input-check-1').addClass('is-valid')
+                $('#input-check-1').fadeOut();
+                $('#input-check-1').fadeIn();
+            }
+        }
+
+        if ($('#input-check-2').attr('class') == 'form-control') {
+            if ($('#prePeriod').val() != '') {
+                $('#input-check-2').addClass('is-valid')
+                $('#input-check-2').fadeOut();
+                $('#input-check-2').fadeIn();
+            }
+        }
+
+
+        if ($('#input-check-3').attr('class') == 'form-control') {
+            if ($('#editor-one').text() != '') {
+                $('#input-check-3').addClass('is-valid')
+                $('#input-check-3').fadeOut();
+                $('#input-check-3').fadeIn();
+            }
+        }
+
+        if ($('#input-check-4').attr('class') == 'form-control') {
+            if ($('.tag').text() != '') {
+                $('#input-check-4').addClass('is-valid')
+                $('#input-check-4').fadeOut();
+                $('#input-check-4').fadeIn();
+            }
+        }
+
+        if ($('#input-check-5').attr('class') == 'form-control') {
+            if ($('#applicationDeadline').val() != '') {
+                $('#input-check-5').addClass('is-valid')
+                $('#input-check-5').fadeOut();
+                $('#input-check-5').fadeIn();
+            }
+        }
+    })
+
+
+</script>
+
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="/resources/css/additional.css">
+    <title th:text="${project.projectName}"></title>
+
+    <meta property="og:image" content="https://sharryhong.github.io/image/spring.png"/>
+    <meta property="og:title" content="스프링 프로젝트"/>
+
+</head>
+<nav th:include="topToolBar.html"></nav>
+<body>
+<div id="fb-root"></div>
+<div class="container">
+    <div class="row">
+        <a href="/project/getProjectList" class="btn btn-outline-secondary mb-3">
+            <i class="fa fa-bars"></i> 목록</a>
+    </div>
+    <div class="row">
+        <div class="col-lg-9 container" id="-info-box">
+            <div class="subject">
+                <input type="hidden" id="userId" th:value="${session.user.userId}">
+                <input type="hidden" id="projectNo" th:value="${project.projectNo}">
+                <!-- 프로젝트 상태 -->
+                <th:block th:if="${project.teamMember.size()}<${project.recruitmentMemberCnt}">
+                    <th:block th:switch="${project.projectStatus}">
+                        <span class="badge badge-success" th:case="1">모집중</span>
+                        <span class="badge badge-primary" th:case="2">모집완료</span>
+                        <span class="badge badge-danger" th:case="3">종료</span>
+                    </th:block>
+                </th:block>
+                <th:block th:if="${project.teamMember.size()}>=${project.recruitmentMemberCnt}">
+                    <span class="badge badge-primary">모집완료</span>
+                </th:block>
+
+                <!-- 프로젝트 등록일 -->
+                <span th:text="${#dates.format(project.regDate, 'yyyy-MM-dd')}" style="float: right;"></span>
+                <span style="float: right;">등록일자&nbsp;</span>
+
+                <!-- 프로젝트 제목 -->
+                <h4 id="projectName" th:text="${project.projectName}">프로젝트 제목</h4>
+                <th:block th:switch="${project.projectCategory}">
+                    <span th:case="1">
+                        <span>개발</span>
+                        <span>&nbsp;|&nbsp;</span>
+                        <span style="color: #ccc">기획</span>
+                        <span>&nbsp;|&nbsp;</span>
+                        <span style="color: #ccc">디자인</span>
+                    </span>
+                    <span th:case="2">
+                        <span style="color: #ccc">개발</span>
+                        <span>&nbsp;|&nbsp;</span>
+                        <span>기획</span>
+                        <span>&nbsp;|&nbsp;</span>
+                        <span style="color: #ccc">디자인</span>
+                    </span>
+                    <span th:case="3">
+                        <span style="color: #ccc">개발</span>
+                        <span>&nbsp;|&nbsp;</span>
+                        <span style="color: #ccc">기획</span>
+                        <span>&nbsp;|&nbsp;</span>
+                        <span>디자인</span>
+                    </span>
+                </th:block>
+
+                <!-- 프로젝트 조회수 -->
+                <span th:text="${project.projectViewCnt}" style="float: right;"></span>
+                <span style="float: right;"><i class="fa fa-eye"></i>&nbsp;</span>
+
+            </div>
+            <hr>
+
+            <!-- 프로젝트 중간 박스 3개 -->
+            <div class="form-group card-box">
+
+                <!-- 예상기간 박스 -->
+                <div class="card-box-unit col-md-3">
+                    <h6 class="card-subtitle mb-2 text-muted">예상기간</h6>
+                    <span th:text="${project.prePeriod}"></span>
+                    <span>일</span>
+                </div>
+
+                <!-- 현재인원 / 모집인원 박스 -->
+                <div class="card-box-unit col-md-3">
+                    <h6 class="card-subtitle mb-2 text-muted">현재인원/모집인원</h6>
+                    <span th:text="${project.teamMember.size()}"></span>
+                    <span> / </span>
+                    <span th:text="${project.recruitmentMemberCnt}"></span>
+                    <span>명</span>
+                </div>
+
+                <!-- 지원자 수 박스 -->
+                <div class="card-box-unit col-md-3">
+                    <h6 class="card-subtitle mb-2 text-muted">지원자 수</h6>
+                    <span th:text="${project.applicantsCnt}"></span>
+                    <span>명</span>
+                </div>
+            </div>
+
+
+            <!-- 박스아래 프로젝트 추가정보 -->
+            <div class="col-md-12 mt-5 mb-5">
+
+                <!-- 추가정보 양식 -->
+                <div class="text-box-menu">
+                    <h6>신청서 마감 기간</h6>
+                    <h6>예상 시작일</h6>
+                    <h6>프로젝트 진행분류</h6>
+                    <h6>미팅방식</h6>
+                </div>
+
+                <!-- 추가정보 값 -->
+                <div class="text-box-content">
+
+                    <!-- 신청서 마감 기간 -->
+                    <h6 th:text="${#dates.format(project.applicationDeadline, 'yyyy-MM-dd')}"></h6>
+
+                    <!-- 예상 시작일 -->
+                    <h6 th:text="${#dates.format(project.preStartDate, 'yyyy-MM-dd')}"></h6>
+
+                    <!-- 프로젝트 진행분류 -->
+                    <th:block th:switch="${project.progressClassification}">
+                        <h6 th:case="1">신규 프로젝트를 진행하려 합니다.</h6>
+                        <h6 th:case="2">기존프로젝트 유지보수를 하려고 합니다.</h6>
+                    </th:block>
+
+                    <!-- 미팅방식 -->
+                    <th:block th:switch="${project.meetingMethod}">
+                        <th:block th:case="1">
+                            <span>대면</span>
+                            <span>/</span>
+                            <span th:text="${project.meetingLocation}"></span>
+                        </th:block>
+
+                        <span th:case="2">비대면</span>
+                    </th:block>
+
+                </div>
+            </div>
+
+
+            <!-- 프로젝트 상세정보 -->
+            <div class="project-detail-box col-md-12">
+                <p id="project-detail-box" th:text="${project.detailHtml}" style="display: none"></p>
+                <script>
+                    $('.project-detail-box').html($('#project-detail-box').text());
+                </script>
+            </div>
+
+
+            <!-- 신청전 질문 -->
+            <div class="project-detail-box col-md-12">
+                <h5>신청전 질문</h5><br/>
+                <p>프로젝트 참여 신청 전 신청서에 질문에 대한 답변을 작성해 주세요.</p>
+                <br/>
+
+                <th:block th:if="${project.applicantQuestionA != null}"></th:block>
+                    <i class="fa fa-dot-circle-o">&nbsp;<span class="p-3" th:text="${project.applicantQuestionA}"></span></i><br/><br/>
+                </th:block>
+
+                <th:block th:if="${project.applicantQuestionB != null}"></th:block>
+                    <i class="fa fa-dot-circle-o">&nbsp;<span class="p-3" th:text="${project.applicantQuestionB}"></span></i><br/><br/>
+                </th:block>
+
+                <th:block th:if="${project.applicantQuestionC != null}"></th:block>
+                    <i class="fa fa-dot-circle-o">&nbsp;<span class="p-3" th:text="${project.applicantQuestionC}"></span></i><br/><br/>
+                </th:block>
+            </div>
+
+
+            <div class="project-detail-box col-md-12">
+                <h5>관련 기술 태그</h5>
+                <span th:each="tag : ${hashList}"
+                      th:text="'#'+${tag}" class="hashtag mt-2"></span>
+            </div>
+
+            <div class="project-detail-box col-md-12">
+                <h5>관련 첨부 자료</h5>
+            </div>
+
+
+            <div class="project-detail-box col-md-12" id="reply-list">
+                <h5 class="mb-5">댓글</h5>
+                <th:block th:if="${project.projectReply.size() == 0}">
+                    <div id="empty-reply">
+                        <img style="width: 60px; height: 60px;" src="/resources/img/icon-empty-comment.svg">
+                        <p class="body-2 text600 empty-comment-text">프로젝트 댓글이 없습니다.</p>
+                        <p class="body-2 text600 empty-comment-text">첫 번째 프로젝트 댓글을 등록해주세요.</p>
+                    </div>
+                </th:block>
+                <th:block th:if="${project.projectReply.size() != 0}">
+                    <div th:each="replyVO : ${project.projectReply}" class="card border-light mb-2 reply-card">
+                        <div class="card-header">
+                            <img class="profile-image float-left"
+                                 th:src="|/resources/uploadImg/${replyVO.replyUserImg}|"
+                                 alt="profile_img">
+                            <h5 th:text="${replyVO.replyUserId}" class="float-left mt-1 ml-2 mb-0"></h5>
+
+                            <th:block th:if="${session.user.userId == replyVO.replyUserId}">
+                                <p id="deleteReply" class="float-right mb-0">&nbsp;|&nbsp;삭제</p>
+                                <p id="updateReply" class="float-right mb-0">&nbsp;&nbsp;수정</p>
+                            </th:block>
+                            <p th:text="${#dates.format(replyVO.regDate, 'yyyy-MM-dd')}" class="float-right mb-0"></p>
+
+                        </div>
+                        <div class="card-body">
+                            <p th:text="${replyVO.replyContent}" class="card-title"></p>
+                        </div>
+                    </div>
+                </th:block>
+
+
+
+
+            </div>
+            <div class="project-detail-box col-md-12" style="border:none;">
+                <th:block th:if="${project.projectReply.size() != 0}">
+                    <div style="margin-bottom: 50px; margin-top: -100px;">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">
+                            <tr>
+                                <td align="center">
+                                    <input type="hidden" id="maxPage" th:value="${ resultPage.maxPage }"/>
+                                    <a id="prePage-btn" class="btn btn-outline-primary" href="javascript:fncGetList(-1)"
+                                       style="display: none">◀ 이전</a>
+                                    <a id="nextPage-btn" class="btn btn-outline-primary" href="javascript:fncGetList(+1)">다음
+                                        ▶</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </th:block>
+                <div class="card border-light mb-2">
+                    <div class="card-header">
+                        <img class="profile-image float-left"
+                             th:src="|/resources/uploadImg/${session.user.profileImg}|"
+                             alt="profile_img">
+                        <h5 class="float-left mt-1 ml-2 mb-0" th:text="${session.user.userId}"></h5>
+                        <div class="float-right">
+                            <div class="btn-group" role="group" aria-label="Third group">
+                                <a id="kakao" href="javascript:;" class="btn btn-secondary"><i
+                                        class="fa fa-comment"></i></a>
+                                <a id="facebook" class="btn btn-secondary"><i class="fa fa-facebook"></i></a>
+                                <a id="twitter" class="btn btn-secondary"><i class="fa fa-twitter"></i></a>
+                                <a id="share" class="btn btn-secondary"><i class="fa fa-plus"></i></a>
+                            </div>
+                            <div class="btn-group" role="group" aria-label="Third group">
+                                <button type="button" class="btn btn-secondary" onclick="window.print();"><i
+                                        class="fa fa-print"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input class="form-control" id="replyContent"
+                           style="margin-top: 0px; margin-bottom: 0px; height: 100px;">
+
+                    <div class="card-header" style="text-align: right;">
+                        <button type="button" id="add-reply-btn" class="btn btn-primary">작성완료</button>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+        <div class="col-lg-3" id="team-info-box" style="height: 500px;">
+            <th:block th:if="${project.teamMember.size()}<${project.recruitmentMemberCnt}">
+                <th:block th:if="${project.projectStatus != 3}">
+                    <th:block th:if="${session.user.projectNo != 0}">
+                        <button type="button" class="btn btn-secondary disabled w-100">이미 참여중인 <br/>프로젝트가 있습니다.</button>
+                        </button>
+                    </th:block>
+                    <th:block th:if="${session.user.projectNo == 0}">
+                        <th:block th:if="${session.user.projectNo == 0 && existApplicant ==0}">
+                            <button id="add_applicant_get" type="button" class="btn btn-success">프로젝트 신청하기</button>
+                        </th:block>
+                        <th:block th:if="${existApplicant != 0}">
+                            <button type="button" class="btn btn-secondary disabled w-100">이미 신청서를 <br/>제출한 프로젝트 입니다.</button>
+                        </th:block>
+                    </th:block>
+                </th:block>
+            </th:block>
+            <th:block th:if="${project.teamMember.size()}>=${project.recruitmentMemberCnt}">
+                <button type="button" class="btn btn-secondary disabled w-100 p-3">모집 마감된 프로젝트 입니다.</button>
+                </button>
+            </th:block>
+            <div class="card p-3">
+                <h4 style="text-align: center">Team Member</h4>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item" th:each="member : ${project.teamMember}">
+                        <img id="nav-profile-image" class="d-inline-block" th:src="|/resources/uploadImg/${member.profileImg}|">
+                        <h6 class="ml-2 d-inline-block" th:text="${member.userId}"></h6>
+                    </li>
+                </ul>
+
+            </div>
+
+            <div id="bookmark-click" th:switch="${project.bookmarkNo}">
+                <button name="bookmarkControl" th:case="0" type="button" class="btn btn-secondary w-100 mt-1"
+                        th:value="1" th:data-bookmarkno="${project.bookmarkNo}" style="background-color: #fff">
+                    <img src="/resources/img/btn-icon-like-off.png" class="d-inline-block">
+                    <h6 class="ml-2 d-inline-block" style="color: #2c3e50">관심프로젝트 등록</h6>
+                </button>
+                <button name="bookmarkControl" th:case="*" type="button" class="btn btn-secondary w-100 mt-1"
+                        th:value="2" th:data-bookmarkno="${project.bookmarkNo}" style="background-color: #fff">
+                    <img src="/resources/img/btn-icon-like-on.png" class="d-inline-block">
+                    <h6 class="ml-2 d-inline-block" style="color: #2c3e50">관심프로젝트 등록</h6>
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Element to pop up -->
+<div id="add_applicant_get_pop_up" class="layerpop">
+    <form id="detailForm" method="post" th:action="@{/applicant/addApplicant}">
+        <h2>신 청 서</h2>
+        <br>
+        <input type="hidden" name="userId" th:value="${session.user.userId}">
+        <input type="hidden" name="projectVO.projectNo" th:value="${project.projectNo}">
+
+        <th:block th:if="${project.applicantQuestionA != null}">
+            <label for="applicantAnswerA" class="control-label" th:text="Q1.+${project.applicantQuestionA}"></label>
+            <input type="text" class="form-control" id="applicantAnswerA" name="applicantAnswerA" placeholder="1번대답">
+        </th:block>
+
+        <th:block th:if="${project.applicantQuestionB != null}">
+            <label for="applicantAnswerB" class="control-label" th:text="Q2.+${project.applicantQuestionB}"></label>
+            <input type="text" class="form-control" id="applicantAnswerB" name="applicantAnswerB" placeholder="2번대답">
+        </th:block>
+
+        <th:block th:if="${project.applicantQuestionC != null}">
+            <label for="applicantAnswerC" class="control-label" th:text="Q3.+${project.applicantQuestionC}"></label>
+            <input type="text" class="form-control" id="applicantAnswerC" name="applicantAnswerC" placeholder="3번대답">
+        </th:block>
+        </br>
+
+        <label>자기소개</label>
+        <textarea class="form-control" id="introToMember" name="introToMember"
+                  placeholder="간단하게 자기소개를 할 수 있습니다."></textarea>
+
+
+        <div style="width:100px;float: right;">
+            <button id="add_applicant_post" class="btn btn-success btn-sm">신청서 제출</button>
+        </div>
+    </form>
+</div>
+
+<!-- share pop up -->
+<div class="modal" id="share-popup">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="margin-top:300px;">
+            <div class="modal-header">
+                <h5 class="modal-title">프로젝트 공유</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-close="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- AddToAny BEGIN -->
+                <div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+                    <a class="a2a_button_twitter"></a>
+                    <a class="a2a_button_email"></a>
+                    <a class="a2a_button_pinterest"></a>
+                    <a class="a2a_button_kakao"></a>
+                    <a class="a2a_button_line"></a>
+                    <a class="a2a_button_reddit"></a>
+                    <a class="a2a_button_copy_link"></a>
+                    <a class="a2a_button_google_gmail"></a>
+                    <a class="a2a_button_evernote"></a>
+                </div>
+                <script async src="https://static.addtoany.com/menu/page.js"></script>
+                <!-- AddToAny END -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" data-close="close">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+<script src="/js/bpopup/jquery.bpopup.min.js"></script>
+
+<script>
+    let projectNo = $('#projectNo').val()
+    let userId = $('#userId').val()
+
+    $('#team-info-box').animate({'top': $(document).scrollTop() + 100 + 'px'});
+    //follow quick menu
+    $(window).scroll(function () {
+        if (matchMedia("screen and (min-width: 992px)").matches) {
+            $("#team-info-box").stop();
+            $('#team-info-box').animate({'top': $(document).scrollTop() + 100 + 'px'}, 700);
+        }
+    });
+
+
+    Kakao.init('6df7290abc27827f655c463601c54db1');
+
+    Kakao.Link.createDefaultButton({
+        container: '#kakao',
+        objectType: 'feed',
+        content: {  // 여기부터 실제 내용이 들어갑니다.
+            title: $('#projectName').text(),
+            description: $('.tag-list').text(),  // 본문 바로 아래 들어가는 영역?
+            imageUrl: 'https://sharryhong.github.io/image/spring.png',
+            link: {
+                mobileWebUrl: 'https://developers.kakao.com',
+                webUrl: 'https://developers.kakao.com'
+            }
+        },
+        buttons: [
+            {
+                title: '웹으로 보기',
+                link: {
+                    mobileWebUrl: document.location.href,
+                    webUrl: document.location.href
+                }
+            },
+        ]
+    });
+
+
+    $('#facebook').click(function () {
+        window.open("https://www.facebook.com/sharer/sharer.php?u=http://127.0.0.1:8282" +
+            location.pathname + location.search + "&app_id=4239912686095771", "_blank", "width=600,height=400");
+
+    })
+
+    $('#twitter').click(function () {
+        window.open("https://twitter.com/intent/tweet?text=" + $('#projectName').text() + "&url=" + document.location.href, "_blank", "width=600,height=400");
+    })
+
+
+    $('#add_applicant_get').bind('click', function (e) {
+        $('#add_applicant_get_pop_up').bPopup();
+    });
+
+    $('#add_applicant_post').on("click", function () {
+        $("#detailForm").submit();
+    });
+
+    $('#share').click(function () {
+        $('#share-popup').bPopup();
+    })
+
+    $("button[data-close=close]").click(function () {
+        $('.modal').bPopup().close();
+    });
+
+
+    $('#add_applicant_post').on('click', function () {
+        console.log('hello');
+        $("#detailForm").submit();
+    });
+
+    $("#bookmark-click").on("click", function () {
+
+        let bookmarkNo = $('button[name=bookmarkControl]').attr("data-bookmarkno");
+        $.ajax({
+            type: 'POST',
+            url: '/project/addBookmark',
+            data: JSON.stringify({
+                userId: userId,
+                projectNo: projectNo,
+                bookmarkNo: bookmarkNo,
+                bookmarkControl: $('#bookmark-click').children().val()
+            }),
+            contentType: 'application/json',
+            success: function (data) {
+
+                let bookmarkCheck = $('button[name=bookmarkControl]').val()
+                $('button[name=bookmarkControl]').removeData('data-bookmarkno');
+                if (bookmarkCheck === "1") {
+                    $('button[name=bookmarkControl]').attr('value', 2);
+                    $('button[name=bookmarkControl]').attr('data-bookmarkno', data);
+                    $('button[name=bookmarkControl]').children().attr('src', '/resources/img/btn-icon-like-on.png')
+                } else {
+                    $('button[name=bookmarkControl]').attr('value', 1);
+                    $('button[name=bookmarkControl]').attr('data-bookmarkno', 0);
+                    $('button[name=bookmarkControl]').children().attr('src', '/resources/img/btn-icon-like-off.png')
+                }
+
+            },
+            error: function (e) {
+                alert("북마크 추가 실패 = " + e)
+            }
+        });
+    })
+
+
+    $('#add-reply-btn').on('click', function () {
+        $.ajax({
+            type: 'POST',
+            url: '/project/addReply',
+            data: JSON.stringify({
+                userId: userId,
+                projectNo: projectNo,
+                replyContent: $('#replyContent').val()
+            }),
+            dataType: 'text',
+            contentType: 'application/json',
+            success: function (data) {
+                const replyVO = JSON.parse(data);
+
+                let html = addReplyDataToHtml(replyVO);
+
+                $("#reply-list").append(html);
+                $('#empty-reply').remove();
+                $('#replyContent').val("");
+            },
+            error: function (e) {
+                alert("댓글 등록 실패" + e)
+            }
+        })
+    });
+
+    let currentPage = 1
+
+    function fncGetList(movePage) {
+
+        currentPage += movePage
+        let maxPage = $('#maxPage').val();
+        if (currentPage == 1) {
+            $('#prePage-btn').css('display', 'none');
+        } else {
+            $('#prePage-btn').css('display', 'inline-block');
+        }
+
+        if (currentPage == maxPage) {
+            $('#nextPage-btn').css('display', 'none');
+        } else {
+            $('#nextPage-btn').css('display', 'inline-block');
+        }
+
+        $.ajax({
+            type: 'GET',
+            url: '/project/getReplyList',
+            data: {
+                projectNo: projectNo,
+                currentPage: currentPage,
+                pageSize: 5
+            },
+            dataType: 'text',
+            contentType: 'application/json',
+            success: function (data) {
+                let array = JSON.parse(data);
+                let html = "";
+
+                for (i in array) {
+                    html += addReplyDataToHtml(array[i]);
+                }
+
+                $('.reply-card').remove();
+                $("#reply-list").append(html);
+
+            }
+
+
+        })
+    }
+
+    function addReplyDataToHtml(replyVO) {
+
+        let html =
+            `<div class="card border-light mb-2 reply-card">
+                <div class="card-header">
+                    <img class="profile-image float-left"
+                         src="/resources/uploadImg/` + replyVO.replyUserImg + `"
+                         alt="profile_img">
+                    <h5 class="float-left mt-1 ml-2 mb-0">` + replyVO.replyUserId + `</h5>
+                    `
+        if (userId == replyVO.replyUserId) {
+            html += `
+                            <p id="deleteReply" class="float-right mb-0">&nbsp;|&nbsp;삭제</p>
+                            <p id="updateReply" class="float-right mb-0">&nbsp;&nbsp;수정</p>`
+        }
+        html += `
+                    <p class="float-right mb-0">` + replyVO.regDate.substring(0, 10) + `</p>
+
+                </div>
+                <div class="card-body">
+                    <p class="card-title">` + replyVO.replyContent + `</p>
+                </div>
+            </div>`
+
+        return html;
+    }
+</script>
+
+
+</body>
+</html>

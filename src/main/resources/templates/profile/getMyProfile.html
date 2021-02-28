@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <title>기본정보 조회</title>
+
+    <style>
+        .account-setting-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 70%;
+            overflow: hidden;
+        }
+
+        .profile_img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+
+</head>
+<body>
+<div th:include="topToolBar.html"></div>
+<div class="container">
+    <input type="hidden" id="userId" name="userId" th:value="${profile.getUserId()}">
+
+    <div class="form-group row">
+        <label class="col-form-label col-md-3 col-sm-3"
+               style="color:#2c3e50; text-align: center; background-color: #fff;">
+        </label><br/>
+
+        <label class="col-form-label col-md-2 col-sm-2"
+               style="color:#2c3e50; text-align: center; background-color: #fff;"></label>
+        <div class="account-setting-img" style="margin-left: 3px;">
+            <th:block th:if="${session.user.profileImg == 'DEFAULTImage.jpg'}">
+                <img class="profile_img" src="/resources/img/pro_default.png" style="width: 150px;height: 150px">
+            </th:block>
+            <th:block th:if="${session.user.profileImg != 'DEFAULTImage.jpg'}">
+                <img class="profile_img" th:src="|/resources/uploadImg/${session.user.profileImg}|"
+                     style="width: 150px;height: 150px">
+            </th:block>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-form-label col-md-3 col-sm-3"
+               style="color:#2c3e50; text-align: center; background-color: #fff;">아이디</label>
+        <div class="col-md-7 col-sm-7">
+            <div th:text="${profile.userId}" class="form-control" readonly="readonly"
+                 style="color:#2c3e50; text-align: center; background-color: #fff;"></div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-form-label col-md-3 col-sm-3"
+               style="color:#2c3e50; text-align: center; background-color: #fff;">이름</label>
+        <div class="col-md-7 col-sm-7">
+            <div th:text="${profile.name}" class="form-control" readonly="readonly"
+                 style="color:#2c3e50; text-align: center; background-color: #fff;"></div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-form-label col-md-3 col-sm-3"
+               style="color:#2c3e50; text-align: center; background-color: #fff;">이메일</label>
+        <div class="col-md-7 col-sm-7">
+            <div th:text="${profile.email}" class="form-control" readonly="readonly"
+                 style="color:#2c3e50; text-align: center; background-color: #fff;"></div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-form-label col-md-3 col-sm-3"
+               style="color:#2c3e50; text-align: center; background-color: #fff;">등급</label>
+        <div class="col-md-7 col-sm-7">
+            <div th:text="${profile.grade}" class="form-control" readonly="readonly"
+                 style="color:#2c3e50; text-align: center; background-color: #fff;"></div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-form-label col-md-3 col-sm-3"
+               style="color:#2c3e50; text-align: center; background-color: #fff;">신고 누적 수</label>
+        <div class="col-md-7 col-sm-7">
+            <div th:text="${profile.reportCnt}" class="form-control" readonly="readonly"
+                 style="color:#2c3e50; text-align: center; background-color: #fff;"></div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-form-label col-md-3 col-sm-3"
+               style="color:#2c3e50; text-align: center; background-color: #fff;">자기소개</label>
+        <div class="col-md-7 col-sm-7">
+            <div th:text="${profile.selfIntro}" class="form-control" readonly="readonly"
+                 style="color:#2c3e50; text-align: center; background-color: #fff;"></div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-form-label col-md-3 col-sm-3"
+               style="color:#2c3e50; text-align: center; background-color: #fff;">링크</label>
+        <div class="col-md-7 col-sm-7">
+            <div th:text="${profile.link}" class="form-control" readonly="readonly"
+                 style="color:#2c3e50; text-align: center; background-color: #fff;"></div>
+        </div>
+    </div>
+
+    <label class="col-form-label col-md-9 col-sm-9"></label>
+    <button type="button" class="btn btn-outline-primary">
+        <a th:href="@{/profile/addMyProfile(userId=${profile.userId})}">수정</a>
+    </button>
+</div>
+<script>
+    $(function () {
+        console.log($("td[name='userId']").text());/*이름으로 접근하는 건 요기요기~~*/
+    })
+
+    console.log()
+</script>
+
+</body>
+</html>

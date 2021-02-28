@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>내 프로젝트</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/lux/bootstrap.min.css">
+
+    <style>
+        .layout{
+            margin: 200px auto;
+            padding: 0 10%;
+        }
+        #text-field {
+            float:left;
+        }
+        #img-field {
+            float:left;
+        }
+        .btn btn-primary btn-lg {
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+<div th:include="topToolBar.html" ></div>
+<div class="layout">
+    <div id="text-field" class="col-12 col-xl-5">
+        <div>
+            <h4>Oops!!</h4>
+            <h2>프로젝트 생성 불가</h2>
+            <h5>:: 현재 참여중인 프로젝트가 있거나
+            프로젝트 중도 탈퇴회원 ::</h5>
+
+            <th:block th:if="${session.user.projectWithdrawalDate != null}">
+                <p><span>탈퇴일 : </span> <span th:text="${#dates.format(session.user.projectWithdrawalDate, 'YYYY-MM-dd')}"></span></p>
+            </th:block>
+        </div>
+        <div style="margin-top: 50px;">
+            <h5>Here are some helpful links :</h5>
+            <div style="margin-top: 20px;">
+                <a style="margin-right: 20px;" class="btn btn-primary btn-lg" href="/welcome">Home</a>
+                <th:block th:if="${session.user.projectNo != 0}">
+                    <a class="btn btn-primary btn-lg" href="/project/myProject">My Project</a>
+                </th:block>
+                <th:block th:if="${session.user.projectNo == 0}">
+                    <a class="btn btn-primary btn-lg" href="/project/getProjectList">Find Project</a>
+                </th:block>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="img-field" class="d-none d-xl-block col-xl-7">
+        <img src="/resources/img/not-found.gif" />
+    </div>
+</div>
+</body>
+</html>

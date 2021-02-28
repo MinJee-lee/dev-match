@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper 
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+		
+<mapper namespace="applicantMapper">
+	<resultMap id="applicantSelectMap" type="com.example.demo.projectApplicant.vo.ApplicantVO">
+	        <result property="applicantNo"	    column="applicant_no"          jdbcType="NUMERIC"/>
+	        <result property="projectNo"    column="hashtag"      jdbcType="VARCHAR"/>
+			<result property="userId"    column="user_id"      jdbcType="NUMERIC"/>
+			<result property="applicantStatus"    column="applicant_status"      jdbcType="NUMERIC"/>
+			<result property="applicantAnswerA"    column="applicant_answer_a"      jdbcType="VARCHAR"/>
+			<result property="applicantAnswerB"    column="applicant_answer_b"      jdbcType="VARCHAR"/>
+			<result property="applicantAnswerC"    column="applicant_answer_c"      jdbcType="VARCHAR"/>
+			<result property="introToMember"    column="intro_to_member"      jdbcType="VARCHAR"/>
+			<result property="aRegDate"    column="reg_date"      jdbcType="DATE"/>
+			
+			<association property="projectVO"  javaType="com.example.demo.project.vo.ProjectVO">
+				<id property="projectNo" 		column="project_no" 		jdbcType="NUMERIC"/>
+				<result property="projectName"	column="project_name"	jdbcType="VARCHAR"/>
+				<result property="leaderId"    	column="user_id"      				jdbcType="VARCHAR"/>
+				<result property="projectDetail"	column="project_detail"	jdbcType="VARCHAR"/>
+				<result property="applicationDeadline"	column="application_deadline"	jdbcType="DATE"/>
+				<result property="recruitmentMemberCnt"	column="recruitment_member_cnt"	jdbcType="NUMERIC"/>
+				<result property="applicantQuestionA"		column="applicant_question_a" 			jdbcType="VARCHAR"/>
+				<result property="applicantQuestionB" 	column="applicant_question_b" 		jdbcType="VARCHAR"/>
+				<result property="applicantQuestionC" 	column="applicant_question_c" 	jdbcType="VARCHAR"/>
+				<result property="projectStatus"    		column="project_status"      		jdbcType="NUMERIC"/>
+				<result property="meetingLocation"    		column="meeting_location"      		jdbcType="VARCHAR"/>
+				<result property="meetingMethod"    		column="meeting_method"      		jdbcType="NUMERIC"/>
+				
+				<collection property="teamMember" 			column="project_no" javaType="java.util.ArrayList" ofType="memberVO" select="getProjectMemberByProjectNo"/>
+			</association>
+	</resultMap>
+	
+	<resultMap id="toDoSelectMap" type="com.example.demo.project.vo.TodoVO">
+	        <result property="todoNo"	    column="todo_no"          jdbcType="NUMERIC"/>
+	        <result property="projectNO"    column="project_no"      jdbcType="NUMERIC"/>
+			<result property="todoContent"    column="user_id"      jdbcType="VARCHAR"/>
+			<result property="userId"    column="todo_content"      jdbcType="VARCHAR"/>
+			<result property="todoStatus"    column="todo_status"      jdbcType="NUMERIC"/>
+	</resultMap>
+
+	<resultMap id="reviewSelectMap" type="com.example.demo.common.vo.ReviewVO">
+	        <result property="reviewNo"	    column="review_no"          jdbcType="NUMERIC"/>
+	        <result property="projectNO"    column="project_no"      jdbcType="NUMERIC"/>
+			<result property="reviewGrade"    column="review_grade"      jdbcType="VARCHAR"/>
+			<result property="reviewComment"    column="review_comment"      jdbcType="VARCHAR"/>
+			<result property="userId"    column="user_id"      jdbcType="NUMERIC"/>
+	</resultMap>
+	
+	<select id = "getProjectMemberByProjectNo" 	resultType="memberVO">
+		SELECT USER_ID,
+		       PROFILE_IMAGE as profileImg
+		FROM   MEMBER
+		WHERE  PROJECT_NO = #{projectNo}
+	</select>
+	
+	
+	<select id="getApplicant" parameterType="int" resultMap="applicantSelectMap">
+		SELECT 
+		P.APPLICANT_QUESTION_A,
+		P.APPLICANT_QUESTION_B,
+		P.APPLICANT_QUESTION_C,
+		A.APPLICANT_NO,
+		A.USER_ID,
+		A.PROJECT_NO,
+		A.APPLICANT_ANSWER_A,
+		A.APPLICANT_ANSWER_B,
+		A.APPLICANT_ANSWER_C,
+		A.INTRO_TO_MEMBER,
+		A.applicant_status,
+		A.REG_DATE AS aRegDate
+		FROM
+		PROJECT P, APPLICANT A
+		WHERE
+		P.PROJECT_NO = A.PROJECT_NO
+		AND
+		APPLICANT_NO = #{applicantNo}
+	</select>
+	
+	<insert id="addApplicant" parameterType="ApplicantVO">
+		INSERT
+		INTO applicant(
+			APPLICANT_NO,
+			USER_ID,
+			PROJECT_NO,
+			APPLICANT_STATUS,
+			APPLICANT_ANSWER_A,
+			APPLICANT_ANSWER_B,
+			APPLICANT_ANSWER_C,
+			INTRO_TO_MEMBER,
+			REG_DATE
+		)
+		VALUES(
+			seq_applicant_no.NEXTVAL,
+			#{userId},
+			#{projectVO.projectNo},
+			1,
+			#{applicantAnswerA:VARCHAR},
+			#{applicantAnswerB:VARCHAR},
+			#{applicantAnswerC:VARCHAR},
+			#{introToMember:VARCHAR},
+			SYSDATE
+		)
+	 </insert>
+	 
+	 <insert id="addProApplicant" parameterType="projectVO">
+		INSERT
+		INTO applicant(
+			APPLICANT_NO,
+			USER_ID,
+			PROJECT_NO,
+			APPLICANT_STATUS,
+			REG_DATE
+		)
+		VALUES(
+			seq_applicant_no.NEXTVAL,
+			#{leaderId},
+			#{projectNo},
+			5,
+			SYSDATE
+		)
+	 </insert>
+	 
+	 <select  id="getApplicantList"  parameterType="com.example.demo.common.vo.SearchVO"	resultMap="applicantSelectMap">
+	 	SELECT *
+		FROM (  SELECT inner_table.*, ROWNUM AS row_seq
+				FROM (  SELECT m.profile_image, a.user_id, a.reg_date, a.applicant_no, a.applicant_status
+						FROM member m, applicant a
+						WHERE m.user_id = a.user_id
+						AND a.project_no = ( SELECT
+						project_no
+						FROM project
+						WHERE user_id=#{userId}
+						AND (project_status='1'
+						OR project_status='2'))
+				ORDER BY a.applicant_no) inner_table
+			WHERE ROWNUM &lt;= #{endRowNum} )
+		WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum}	 	
+	 </select>
+	 
+	 <select  id="getAppliedApplicantList"  parameterType="com.example.demo.common.vo.SearchVO"	resultMap="applicantSelectMap">
+	 	SELECT *
+		FROM ( SELECT inner_table.*, ROWNUM AS row_seq
+			FROM ( 
+				SELECT
+				a.applicant_no,
+				a.applicant_status,
+				a.reg_date,
+				p.project_name,
+				p.project_no,
+				p.project_detail,
+				p.user_id,
+				p.application_deadline,
+				p.recruitment_member_cnt,
+				p.project_status,
+				p.meeting_location,
+				p.meeting_method
+				FROM
+				applicant a, project p
+				WHERE
+				a.project_no = p.project_no 
+				AND a.user_id = #{userId}
+				<!--현제부터 몇개월 까지의 list를 출력할건지-->
+				<if test="searchConditionA != null">
+					<if test="searchConditionA == 1">AND a.REG_DATE BETWEEN TRUNC(ADD_MONTHS(sysdate,-1)+1) - TO_CHAR(sysdate,'DD')
+													 AND TRUNC(LAST_DAY(sysdate)) +0.99999421</if>
+					<if test="searchConditionA == 2">AND a.REG_DATE BETWEEN TRUNC(ADD_MONTHS(sysdate,-2)+1) - TO_CHAR(sysdate,'DD')
+													 AND TRUNC(LAST_DAY(sysdate)) +0.99999421</if>
+					<if test="searchConditionA == 3">AND a.REG_DATE BETWEEN TRUNC(ADD_MONTHS(sysdate,-3)+1) - TO_CHAR(sysdate,'DD')
+													 AND TRUNC(LAST_DAY(sysdate)) +0.99999421</if>
+				</if>
+				<!--신청서 상태-->
+				<if test="searchConditionB != 6">
+					<if test = "searchConditionB == 1" >AND a.applicant_status = 1</if>
+					<if test = "searchConditionB == 2" >AND a.applicant_status = 2</if>
+					<if test = "searchConditionB == 3" >AND a.applicant_status = 3</if>
+					<if test = "searchConditionB == 4" >AND a.applicant_status = 4</if>
+					AND NOT (a.applicant_status = 6)
+				</if>
+				<if test = "searchConditionB == 6" >AND a.applicant_status = 6</if>
+				ORDER BY a.APPLICANT_NO
+				) inner_table
+			WHERE ROWNUM &lt;= #{endRowNum} )
+		WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum}	 	
+	 </select>
+	 
+	 <update	id="updateApplicantStatus"	parameterType="updateApplicantStatusDTO" >
+	   	UPDATE applicant
+	   	<set>
+	   		APPLICANT_STATUS 	= #{applicantStatus}
+	   	</set>
+	   	WHERE APPLICANT_NO = #{applicantNo}
+	 </update>
+	 
+	 <update id="updateProjectMember" parameterType="updateApplicantStatusDTO">
+		UPDATE MEMBER
+		<set>
+			PROJECT_NO = (SELECT PROJECT_NO
+						  FROM APPLICANT
+						  WHERE APPLICANT_NO=#{applicantNo})
+		</set>
+		WHERE USER_ID = #{userId}
+	</update>
+	 
+	 
+	 <select  id="existApplicant"  parameterType="hashMap"	resultType="int">
+	 	SELECT count(*)
+		FROM applicant
+		WHERE
+		user_id = #{userId}
+		AND project_no = #{projectNo}
+	 </select>
+	 
+	 <select id="appliedTotalCount" parameterType="com.example.demo.common.vo.SearchVO" resultType="int">
+	 	SELECT COUNT(*)
+	  	FROM(
+	  			SELECT
+				a.applicant_no,
+				a.applicant_status,
+				a.reg_date,
+				p.project_name,
+				p.project_no,
+				p.project_detail,
+				p.user_id,
+				p.application_deadline,
+				p.recruitment_member_cnt,
+				p.project_status,
+				p.meeting_location,
+				p.meeting_method
+				FROM
+				applicant a, project p
+				WHERE
+				a.project_no = p.project_no 
+				AND a.user_id = #{userId}
+				<!--현제부터 몇개월 까지의 list를 출력할건지-->
+				<if test="searchConditionA != null">
+					<if test="searchConditionA == 1">AND a.REG_DATE BETWEEN TRUNC(ADD_MONTHS(sysdate,-1)+1) - TO_CHAR(sysdate,'DD')
+													 AND TRUNC(LAST_DAY(sysdate)) +0.99999421</if>
+					<if test="searchConditionA == 2">AND a.REG_DATE BETWEEN TRUNC(ADD_MONTHS(sysdate,-2)+1) - TO_CHAR(sysdate,'DD')
+													 AND TRUNC(LAST_DAY(sysdate)) +0.99999421</if>
+					<if test="searchConditionA == 3">AND a.REG_DATE BETWEEN TRUNC(ADD_MONTHS(sysdate,-3)+1) - TO_CHAR(sysdate,'DD')
+													 AND TRUNC(LAST_DAY(sysdate)) +0.99999421</if>
+				</if>
+				<!--신청서 상태-->
+				<if test="searchConditionB != 6">
+					<if test = "searchConditionB == 1" >AND a.applicant_status = 1</if>
+					<if test = "searchConditionB == 2" >AND a.applicant_status = 2</if>
+					<if test = "searchConditionB == 3" >AND a.applicant_status = 3</if>
+					<if test = "searchConditionB == 4" >AND a.applicant_status = 4</if>
+					AND NOT (a.applicant_status = 6)
+				</if>
+				<if test = "searchConditionB == 6" >AND a.applicant_status = 6</if>
+		) countTable	
+	 </select>
+
+</mapper>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html class=" " lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Member manage list page</title>
+
+    <link href="/resources/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/resources/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/resources/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <link href="/resources/vendors/animate.css/animate.min.css" rel="stylesheet">
+    <link href="/resources/build/css/custom.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            color: #73879C;
+            background: white;
+            font-family: "Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1.471;
+        }
+    </style>
+</head>
+<body class="nav-md">
+<div class="container body">
+    <div class="main_container">
+        <div class="table-responsive">
+            <table class="table table-striped jambo_table bulk_action">
+                <thead>
+                <tr class="headings">
+                    <th class="column-title">ID</th>
+                    <th class="column-title">Name</th>
+                    <th class="column-title">Email</th>
+                    <th class="column-title">grade</th>
+                    <th class="column-title">status</th>
+                    <th class="column-title">Report Count</th>
+                    <th class="column-title">Register Date</th>
+                    <th class="column-title no-link last"><span class="nobr">Action</span>
+                    </th>
+                    <th class="bulk-actions" colspan="7">
+                        <a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="even pointer" th:each="member : ${memberList}">
+                    <td class=" " th:text="${member.userId}"></td>
+                    <td class=" " th:text="${member.name}"></td>
+                    <td class=" " th:text="${member.email}"></td>
+                    <td class=" " th:text="${member.grade}"></td>
+                    <td class=" " th:text="${member.status}"></td>
+                    <td class=" " th:text="${member.reportCnt}"></td>
+                    <td class=" " th:text="${member.regDate}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

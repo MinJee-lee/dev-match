@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<meta charset="UTF-8">
+<head>
+    <title>프로필 기본정보</title>
+
+    <style>
+        .account-setting-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 70%;
+            overflow: hidden;
+        }
+
+        .profile_img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:include="topToolBar.html"></div>
+<div class="container">
+    <form th:action="@{/profile/addMyProfile}" th:method="post" enctype="multipart/form-data">
+        <input type="hidden" id="userId" name="userId" th:value="${profile.getUserId()}"/>
+
+        <div class="form-group row">
+            <label class="col-form-label col-md-3 col-sm-3"
+                   style="color:#2c3e50; text-align: center; background-color: #fff;">
+            </label><br/>
+
+            <label class="col-form-label col-md-3 col-sm-3"
+                   style="color:#2c3e50; text-align: center; background-color: #fff;"></label>
+            <div class="account-setting-img" style="margin-left: 3px;">
+                <th:block th:if="${session.user.profileImg == 'DEFAULTImage.jpg'}">
+                    <img class="profile_img" src="/resources/img/pro_default.png" style="width: 150px;height: 150px">
+                </th:block>
+                <th:block th:if="${session.user.profileImg != 'DEFAULTImage.jpg'}">
+                    <img class="profile_img" th:src="|/resources/uploadImg/${session.user.profileImg}|"
+                         style="width: 150px;height: 150px">
+                </th:block>
+            </div>
+        </div>
+        <label class="col-form-label col-md-7 col-sm-7"></label>
+        <input type="file" id="uploadFile" name="imageFile"><br/><br/>
+
+        <div class="form-group row">
+            <label class="col-form-label col-md-3 col-sm-3"
+                   style="color:#2c3e50; text-align: center; background-color: #fff;">아이디</label>
+            <div class="col-md-7 col-sm-7">
+                <div th:text="${profile.userId}" class="form-control" readonly="readonly"
+                     style="color:#2c3e50; text-align: center; background-color: #fff;"></div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-form-label col-md-3 col-sm-3"
+                   style="color:#2c3e50; text-align: center; background-color: #fff;">이름</label>
+            <div class="col-md-7 col-sm-7">
+                <div th:text="${profile.name}" class="form-control" readonly="readonly"
+                     style="color:#2c3e50; text-align: center; background-color: #fff;"></div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-form-label col-md-3 col-sm-3"
+                   style="color:#2c3e50; text-align: center; background-color: #fff;">이메일</label>
+            <div class="col-md-7 col-sm-7">
+                <div th:text="${profile.email}" class="form-control" readonly="readonly"
+                     style="color:#2c3e50; text-align: center; background-color: #fff;"></div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-form-label col-md-3 col-sm-3"
+                   style="color:#2c3e50; text-align: center; background-color: #fff;">등급</label>
+            <div class="col-md-7 col-sm-7">
+                <div th:text="${profile.grade}" class="form-control" readonly="readonly"
+                     style="color:#2c3e50; text-align: center; background-color: #fff;"></div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-form-label col-md-3 col-sm-3"
+                   style="color:#2c3e50; text-align: center; background-color: #fff;">신고 누적 수</label>
+            <div class="col-md-7 col-sm-7">
+                <div th:text="${profile.reportCnt}" class="form-control" readonly="readonly"
+                     style="color:#2c3e50; text-align: center; background-color: #fff;"></div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-form-label col-md-3 col-sm-3"
+                   style="color:#2c3e50; text-align: center; background-color: #fff; margin: auto 0">자기소개</label>
+            <div class="col-md-7 col-sm-7">
+                <input type="text" name="selfIntro" class="form-control" th:value="${profile.selfIntro}" placeholder="자기소개를 입력해주세요"
+                       style="height: 150px; "/>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-form-label col-md-3 col-sm-3"
+                   style="color:#2c3e50; text-align: center; background-color: #fff;">링크</label>
+            <div class="col-md-7 col-sm-7">
+                <input type="text" name="link" class="form-control" th:value="${profile.link}" placeholder="링크를 입력해주세요"/>
+            </div>
+        </div>
+
+        <label class="col-form-label col-md-9 col-sm-9"></label>
+        <input type="submit" class="btn btn-outline-primary" value="등록완료">
+
+        <button type="button" class="btn btn-outline-primary">
+            <a th:href="@{/profile/getMyProfile(userId=${profile.userId})}">취소</a>
+        </button>
+
+    </form>
+</div>
+
+<script type="text/javascript">
+    let sel_files = [];
+
+
+    $(function () {
+        $("#uploadFile").on("change", handleImgsFilesSelect);
+    });
+
+
+    function handleImgsFilesSelect(e) {
+        let files = e.target.files;
+        let filesArr = Array.prototype.slice.call(files);
+
+        filesArr.forEach(function (f) {
+            if (!f.type.match("image.*")) {
+                alert("확장자는 이미지 확장자만 가능합니다.");
+                return;
+            }
+
+            sel_files.push(f);
+
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                alert(e.target.result);
+                // let img_html = "<img src=\"" + e.target.result + "\" />";
+
+                $(".profile_img").attr('src', e.target.result);
+            }
+            reader.readAsDataURL(f);
+        });
+    }
+
+
+</script>
+</body>
+</html>

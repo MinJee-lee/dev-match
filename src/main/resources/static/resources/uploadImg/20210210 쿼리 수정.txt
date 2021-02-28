@@ -1,0 +1,30 @@
+//해시태그 테이블 통합, 신청서 테이블에 포트폴리오No 컬럼추가
+
+drop table SKILL_HASHTAG;
+
+drop sequence SEQ_SKILLHASHTAG_NO;
+
+drop table HASHTAG;
+
+create table HASHTAG
+(
+    HASHTAG_NO   NUMBER       not null
+        primary key,
+    HASHTAG      VARCHAR2(3000) not null,
+    PROJECT_NO   NUMBER
+        constraint HASHTAG_PROJECT_FK
+            references PROJECT
+                on delete cascade,
+    PORTFOLIO_NO NUMBER
+        constraint HASHTAG_PORTFOLIO_FK
+            references PORTFOLIO
+                on delete cascade
+);
+
+alter table APPLICANT add PORTFOLIO_NO NUMBER;
+
+
+alter table APPLICANT
+	add constraint APPLICANT_PORTFOLIO_FK
+		foreign key (PORTFOLIO_NO) references PORTFOLIO
+			on delete cascade;

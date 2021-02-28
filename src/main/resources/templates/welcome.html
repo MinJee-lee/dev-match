@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!--<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/resources/css/additional.css">
+    <title>Welcome</title>
+
+    <style>
+        #title-image {
+            background-image: url("/resources/img/title.png");
+            width: 100%;
+            height: 400px;
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+        }
+        @media screen and (max-width: 767px) {
+
+            .main-block-right {
+                margin-top : 50px;
+            }
+
+        }
+    </style>
+</head>-->
+
+<nav class="mb-0" th:include="topToolBar.html"></nav>
+<body style="height: 1500px;">
+<div class="row" id="title-image"></div>
+<div class="row">
+    <div class="container mt-5">
+        <div class="col-md-6 main-block-left">
+            <h5><i class="glyphicon glyphicon-file"></i> 프로젝트</h5>
+            <div class="card border-light p-3">
+                <div class="welcome-project-box mb-1" th:each="project : ${projectList}">
+                    <th:block th:if="${session.user != null}">
+                        <div class="list-box w-50 float-left">
+                            <a th:href="@{/project/getProject(projectNo=${project.projectNo})}"
+                               th:text="${project.projectName}"
+                               style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></a>
+                        </div>
+                        <div class="w-25 float-right" th:text="${project.leaderId}"/>
+                    </th:block>
+
+
+                    <th:block th:if="${session.user == null}">
+                        <div class="list-box w-50 float-left"
+                             style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                            <a href="#"
+                               th:text="${project.projectName}"
+                            ></a>
+                        </div>
+                        <div class="w-25 float-right" th:text="${project.leaderId}"/>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 main-block-right">
+            <h5><i class="fa fa-comment"></i> 커뮤니티</h5>
+            <div class="card border-light p-3">
+                <div class="welcome-community-box mb-1" th:each="postVO : ${postList}">
+                    <th:block th:if="${session.user != null}">
+                        <div class="list-box w-50 float-left">
+                            <a th:href="@{/comm/getPost(postNo=${postVO.postNo})}"
+                               th:text="${postVO.postName}"
+                               style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></a>
+                        </div>
+                        <div class="w-25 float-right" th:text="${postVO.userId}"/>
+                    </th:block>
+
+
+                    <th:block th:if="${session.user == null}">
+                        <div class="list-box w-50 float-left"
+                             style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                            <a href="#"
+                               th:text="${postVO.postName}"
+                            ></a>
+                        </div>
+                        <div class="w-25 float-right" th:text="${postVO.userId}"/>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="login-popup">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-close="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" th:replace="login :: login">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" data-close="close">취소</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('.list-box').click(function () {
+        $('#login-popup').bPopup();
+    })
+
+    $("button[data-close=close]").click(function () {
+        $('.modal').bPopup().close();
+    });
+</script>
+
+<script src="/js/bpopup/jquery.bpopup.js"></script>
+</body>
+</html>

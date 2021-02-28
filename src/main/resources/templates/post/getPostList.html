@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"/>
+<meta charset="UTF-8">
+<head>
+    <link rel="stylesheet" href="/resources/css/additional.css" type="text/css">
+
+    <script type="text/javascript">
+        let count = 0;//스크롤 바닥 감지
+        window.onscroll = function (e) {//추가 임시콘텐츠
+            //window height + window scroll 값이 document height 보다 클 경우.
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                //실행할 로직(컨텐츠 추가)
+                count++;
+                let addCount = '<div class="block"><p>' + count + '</p></div>';
+                //article에 추가되는 콘텐츠를 더함
+                $('article').append(addCount);
+            }
+        };
+
+    </script>
+
+</head>
+<nav th:include="topToolBar.html"></nav>
+<body>
+<div class="container">
+    <div class="float-right mr-3">
+        <a id="add_post_btn" class="btn btn-success " th:href="@{/comm/addPost}"><i class="fa fa-pencil"></i> 새 글 작성</a>
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col">번호</th>
+            <th scope="col">제목</th>
+            <th scope="col">작성자</th>
+            <th scope="col">작성날짜</th>
+            <th scope="col">조회수</th>
+        </tr>
+        </thead>
+
+        <tbody>
+                <tr scope="row" th:each="postVO : ${postList}">
+                    <td th:text="${postVO.postNo}"></td>
+                    <!--        <td th:text="${postVO.postName}"></td>-->
+                    <td>
+                        <a th:href="@{/comm/getPost(postNo=${postVO.postNo})}"
+                           th:text="${postVO.postName}"></a>
+                    </td>
+                    <td th:text="${postVO.userId}"></td>
+                    <td class="" th:text="${#dates.format(postVO.regDate, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${postVO.viewCnt}"></td>
+                </tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+
+        <td>
+            <a th:href="@{/comm/addPost}"/>작성
+        </td>
+
+
+        </tbody>
+    </table>
+</div>
+</body>

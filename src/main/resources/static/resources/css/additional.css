@@ -1,0 +1,248 @@
+label > a:hover {
+    text-decoration: none;
+}
+
+#projectDetail {
+    padding: 30px;
+    min-height: 100%;
+}
+
+#recruitmentMemberCnt {
+    width: 50%;
+}
+
+.hashtag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 8px;
+    background-color: #eee;
+    margin-right: 8px;
+}
+
+.wrapper {
+    float: none;
+    width: 85%;
+    margin: 0 auto;
+}
+
+.page-name {
+    width: 100%;
+    margin: 0 0 100px 0;
+}
+
+.form-group {
+    margin: 100px 0;
+}
+
+#addProject {
+    width: 100%;
+}
+
+#project-info-box {
+    padding: 20px;
+}
+
+#team-info-box {
+    padding: 20px;
+}
+
+.card-box {
+    width: 100%;
+    text-align: center;
+}
+
+.card-box-unit {
+    display: inline-block;
+    margin: 20px;
+    padding: 10px;
+    height: 100px;
+    border: 1px solid #e6ebf0;
+    border-radius: 8px;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+    padding: 18px 24px 18px 16px;
+}
+
+.card-subtitle {
+    text-align: left;
+}
+
+.member-count-box {
+    display: inline-block;
+}
+
+.text-box-menu, .text-box-content {
+    display: inline-block;
+    margin-right: 50px;
+}
+
+
+.project-detail-box {
+    padding: 50px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+
+.member-info {
+    border: 1px solid #777777;
+    border-radius: 2px;
+}
+
+#empty-reply {
+    text-align: center;
+}
+
+#add_applicant_get {
+    width: 100%;
+    height: 60px;
+}
+
+#add_applicant_done {
+    width: 100%;
+    height: 60px;
+}
+
+#add_applicant_get_pop_up {
+    background-color: #fff;
+    border-radius: 15px;
+    color: #000;
+    display: none;
+    padding: 20px;
+    min-width: 400px;
+    min-height: 180px;
+}
+
+.b-close {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+}
+
+.card-list-box {
+    display: inline-block;
+}
+
+#line {
+    float: right;
+    border: 1px solid #CCCCCC;
+    width: 1px;
+    height: 100%;
+}
+
+.searchCondition-list {
+    border: 1px solid #CCCCCC;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+#btn-box {
+    display: inline-block;
+}
+
+.project-box {
+    margin-bottom: 10px;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.card-text {
+    float: left;
+    width: 70%;
+    height: 55%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#myProjectHeader {
+    margin: 100px 0;
+}
+
+
+#toast-message {
+    width: 250px;
+    height: 20px;
+    height: auto;
+    position: fixed;
+    left: 50%;
+    margin-left: -125px;
+    bottom: 60%;
+}
+
+
+.form-group-header {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.in-card-project-detail {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: inherit;
+}
+
+.searchCondition-list {
+    display: inline-block;
+    width: 90%;
+}
+
+.in-card-category {
+    width: 5%;
+}
+
+.in-card-locate {
+    width: 15%;
+}
+
+.in-card-hashtag {
+    width: 30%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+.in-card-project-info {
+    width: 25%;
+}
+
+.in-card-project-detail {
+    width: 70%;
+}
+
+@media screen and (max-width: 1000px) {
+
+    #followquick {
+        display: none;
+    }
+
+    .searchCondition-list {
+        width: 100%;
+    }
+
+    #line {
+        display: none;
+    }
+
+    .in-card-category {
+        width: 15%;
+    }
+
+    .in-card-locate {
+        width: 37%;
+    }
+
+    .in-card-hashtag {
+        width: 45%;
+    }
+
+    .in-card-project-info {
+        display: none;
+    }
+
+    .in-card-project-name {
+        font-size: 18px;
+    }
+
+    .in-card-project-detail {
+        width: 100%;
+    }
+}

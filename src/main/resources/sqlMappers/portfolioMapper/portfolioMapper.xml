@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="portfolioMapper">
+    <resultMap id="portfolioSelectMap" type="com.example.demo.portfolio.vo.PortfolioVO">
+        <result property="portNo" column="portfolio_no" jdbcType="INTEGER"/>
+        <result property="userId"   column="user_id"    jdbcType="VARCHAR"/>
+        <result property="projectNo"    column="project_no" jdbcType="INTEGER"/>
+        <result property="portProjectStartDate" column="port_project_start_date" jdbcType="DATE"/>
+        <result property="portProjectEndDate" column="port_project_end_date"    jdbcType="DATE"/>
+        <result property="portDescription" column="port_description" jdbcType="VARCHAR"/>
+        <result property="portTitle" column="port_title" jdbcType="VARCHAR"/>
+        <result property="portMemberCnt" column="port_member_cnt" jdbcType="INTEGER"/>
+        <result property="regDate" column="reg_date" jdbcType="DATE"/>
+        <result property="portThumbnailImg" column="PORT_THUMBNAIL_IMAGE" jdbcType="VARCHAR"/>
+
+        <!--association-->
+<!--        <association property="portSkillTag" column="portfolio_no" select="getHashTag"/>-->
+
+        <!--//TODO collection 구현해야합니다~-->
+<!--        <collection property="portFileName" column="portfolio_no" select=""/>-->
+    </resultMap>
+
+    <select id="getPortList" parameterType="searchVO" resultType="portfolioVO">
+        SELECT *
+        FROM (SELECT inner_table.*, ROWNUM as row_seq
+        FROM( SELECT portfolio_no portNo,
+        user_id,
+        project_no,
+        port_project_start_date,
+        port_project_end_date,
+        port_description,
+        port_thumbnail_image,
+        port_title,
+        port_member_cnt,
+        reg_date
+        FROM portfolio
+        <where>
+            <if test="searchConditionA != null">
+                <if test="searchConditionA == 1">
+                    port_title LIKE '%'||#{searchKeyword}||'%'
+                </if>
+                <if test="searchConditionA == 2">
+                    port_description LIKE '%'||#{searchKeyword}||'%'
+                </if>
+                <if test="searchConditionA == 3">
+                    user_id LIKE '%'||#{searchKeyword}||'%'
+                </if>
+            </if>
+        </where>
+        ORDER BY portfolio_no ) inner_table
+        WHERE ROWNUM &lt;=#{endRowNum} )
+        WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum} AND user_id=#{userId}
+    </select>
+
+    <select id="getEndProjectList" parameterType="string" resultType="projectVO">
+        SELECT
+            p.project_name as projectName,
+            p.project_no,
+            p.application_deadline,
+            p.end_date,
+            p.recruitment_member_cnt
+        FROM applicant a, project p
+        WHERE a.USER_ID = #{userId} AND
+            a.PROJECT_NO = p.PROJECT_NO AND
+            a.APPLICANT_STATUS = 6 AND
+            a.portfolio_no IS NULL
+    </select>
+
+
+    <insert id="addPort" parameterType="com.example.demo.portfolio.vo.PortfolioVO" useGeneratedKeys="true" keyColumn="portfolio_no" keyProperty="portNo">
+        INSERT
+        INTO portfolio (
+        portfolio_no,
+        user_id,
+        <if test="projectNo != 0">
+            project_no,
+        </if>
+        port_project_start_date,
+        port_project_end_date,
+        port_description,
+        port_title,
+        port_member_cnt,
+        reg_date
+        )
+        VALUES(
+        seq_portfolio_no.NEXTVAL,
+        #{userId},
+        <if test="projectNo != 0">
+            #{projectNo:INTEGER},
+        </if>
+        #{portProjectStartDate},
+        #{portProjectEndDate},
+        #{portDescription},
+        #{portTitle},
+        #{portMemberCnt},
+        SYSDATE
+        )
+    </insert>
+
+    <select id="getProjectInfo" parameterType="int" resultType="projectVO">
+        SELECT
+            project_name projectName,
+            project_no projectNo,
+            application_deadline applicationDeadline,
+            end_date endDate
+        FROM project
+        WHERE project_no = #{projectNo}
+    </select>
+
+    <update id="updatePort" parameterType="com.example.demo.portfolio.vo.PortfolioVO">
+        UPDATE portfolio
+        SET port_project_start_date = #{portProjectStartDate},
+            port_project_end_date = #{portProjectEndDate},
+            port_description = #{portDescription},
+            port_member_cnt = #{portMemberCnt},
+            port_title = #{portTitle},
+            WHERE portfolio_no = #{portNo}
+    </update>
+
+    <select id="getPort" parameterType="int" resultType="com.example.demo.portfolio.vo.PortfolioVO">
+        SELECT portfolio_no as portNo,
+               user_id,
+               project_no,
+               port_title,
+               port_member_cnt,
+               port_project_start_date,
+               port_project_end_date,
+               port_description
+        FROM portfolio
+        WHERE portfolio_no = #{portNo}
+    </select>
+
+    <delete id="deletePort" parameterType="int" >
+        DELETE FROM portfolio
+        WHERE portfolio_no = #{portNo}
+    </delete>
+
+    <select id="getTotalCount" parameterType="pageVO" resultType="int">
+        SELECT COUNT(*)
+        FROM portfolio
+    </select>
+
+    <!--<select id="getHashTag" resultType="portfolioVO">
+        SELECT HASHTAG
+        FROM HASHTAG
+        WHERE PORTFOLIO_NO = #{portfolio_no}
+    </select>
+
+    <update id="updateHashTag" parameterType="portfolioVO">
+        UPDATE hashtag
+        SET hashtag = #{portSkillTag}
+        WHERE portfolio_no=#{portNo}
+    </update>
+
+    <insert id="addHashTag" parameterType="portfolioVO">
+        INSERT INTO HASHTAG ( HASHTAG_NO, HASHTAG, PORTFOLIO_NO)
+        VALUES (SEQ_HASHTAG_NO.nextval, #{portSkillTag}, #{portNo} )
+    </insert>-->
+
+   <update id="updateApplicantStatus" parameterType="portfolioVO">
+        UPDATE APPLICANT
+        SET PORTFOLIO_NO = #{portNo}
+        WHERE USER_ID=#{userId} AND PROJECT_NO=#{projectNo} AND APPLICANT_STATUS = 6;
+    </update>
+
+</mapper>

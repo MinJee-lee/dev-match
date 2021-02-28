@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:background-color="http://www.w3.org/1999/xhtml">
+<meta charset="UTF-8">
+<head>
+
+
+
+
+
+
+
+    <style>
+        #add_portfolio_get_pop_up {
+            background-color: #fff;
+            border-radius: 15px;
+            color: #000;
+            display: none;
+            padding: 20px;
+            min-width: 400px;
+            min-height: 200px;
+        }
+
+        .b-close {
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 5px;
+        }
+    </style>
+
+
+    <title>포트폴리오 목록</title>
+</head>
+<body>
+<div th:include="topToolBar.html"></div>
+<table class="table table-hover" width="100%" border="0" cellpadding="0" style="margin-top:10px;">
+    <thead>
+    <tr>
+        <th scope="col"></th>
+        <th scope="col">제목</th>
+        <th scope="col">작성날짜</th>
+        <th scope="col"></th>
+    </tr>
+
+    </thead>
+
+    <tbody>
+
+    <tr class="table-light" th:each="portfolioVO:${portList}">
+        <td></td>
+        <td><a th:href="@{/port/getPort(portNo=${portfolioVO.portNo})}"
+               th:text="${portfolioVO.portTitle}"></a></td>
+        <td th:text="${#dates.format(portfolioVO.regDate,'yyyy-MM-dd')}" name="등록일자"></td>
+        <td></td>
+    </tr>
+
+    </tbody>
+</table>
+
+<button type="button" id="add_portfolio_get" class="btn btn-secondary">프로젝트 불러오기</button>
+
+<button type="button" class="btn btn-secondary">
+    <a href="/port/addPort?projectNo=0">글쓰기</a>
+</button>
+
+<div id="add_portfolio_get_pop_up" class="layerpop" background-color: white;
+     style="width: 700px; height: 350px; overflow:auto;">
+    <form id="detailForm" method="post" class="control-label" th:action="@{/port/addport}">
+        <h2><label class="control-label">완료된 프로젝트 목록</label></h2>
+        <br>
+
+        <div class="" th:each="projectVO:${endProjectList}">
+            <div class="form-group">
+
+                <table width="100%" border="0" cellpadding="0" style="margin-top:10px;">
+
+
+                    <thead>
+                    <tr>
+                        <td class="column-title" width="100">프로젝트명</td>
+                        <td class="column-title" width="100"></td>
+                        <td class="column-title" width="100">작성날짜</td>
+                        <td class="column-title" width="100"></td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="11" bgcolor="808285" height="1"></td>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr>
+                        <td class="label"><a th:href="@{/port/addPort(projectNo=${projectVO.projectNo})}"
+                                             th:text="${projectVO.projectName}"></a></td>
+                        <td th:text="${#dates.format(projectVO.applicationDeadline,'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(projectVO.endDate,'yyyy-MM-dd')}"></td>
+                        <td th:text="${projectVO.recruitmentMemberCnt}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+
+     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="/js/bpopup/jquery.bpopup.min.js"></script>
+
+    <!--레이어팝업-->
+<script>
+    $(function () {
+        $('#add_portfolio_get').bind('click', function () {
+
+            $('#add_portfolio_get_pop_up').bPopup();
+        });
+
+    });
+
+
+    $(function () {
+        $('#add_portfolio_post').on("click", function () {
+            $('#detailForm').submit();
+        });
+    });
+
+    /*<!-- RestController 공부용 -->*/
+    $(function () {
+        console.log($("td[name='등록일자']").text());/*이름으로 접근하는 건 요기요기~~*/
+    })
+
+    console.log()
+
+    $(function () {  /*제이쿼리를 쓰겠다 선언*/
+        /*id class name 으로 접근하는 3가지 방법이 있다 id가 유니크해서  id로 접근하는 게 쉬움(모든 태그에서 id가 겹치면 안됨)
+        * 개개인은 id로 하고 class는 여러가지할 때 선택*/
+        $("#test").on("click", function () {/*#을 붙이면 id를 불러온단 소리다 class는 .이다*/
+            $.ajax({
+                url: "/restPortfolio/portList",
+                type: "get",/*리스트를 받아와서 get임*/
+                contentType: "application/json",/*제이슨을 쓰겠다 선언*/
+                /*dataType:"json",*/
+                /*data:"" 넘겨줄 값인데 여기서는 id니까 세션으로 해결 가능 그래서 안 써줘도 됨*/
+                success: function (data) {
+                    /*서버에서 리턴값을 불러오길 성공했을 때 실행되는 function*/
+                    alert(data)
+                    /*여기까지 쓰고 레스트컨트롤러 ㄱ*/
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>
+
+

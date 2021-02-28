@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/resources/css/additional.css" type="text/css">
+
+    <style>
+        .panel-heading, .note-toolbar {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<nav th:include="topToolBar.html"></nav>
+<div class="container" style="margin-top: 140px">
+    <form id="addPostForm" action="/comm/addPost" method="post">
+        <div class="col-md-12 mb-2">
+            <input class="w-100 pl-2" type="text" placeholder="제목을 입력하세요." name="postName"
+                   style="height: 60px; font-size: 25px; border:none; background-color: #fff">
+            <hr class="mt-0 mb-3"/>
+        </div>
+        <div class="col-md-12">
+            <textarea class="summernote col-md-12" name="postContent"></textarea>
+        </div>
+
+        <div class="form-group row float-right mr-3">
+            <input type="submit" id="cancelPost-btn" class="btn btn-outline-secondary" value="취소"/>
+            <input type="submit" id="addPost-btn" class="btn btn-outline-primary" value="작성"/>
+        </div>
+    </form>
+</div>
+
+<script>
+    $('.summernote').summernote({
+        height: 400,
+        lang: "ko-KR",
+        focus: true,
+        callbacks: {
+            onImageUpload: function (files, editor, welEditable) {
+                for (var i = files.length - 1; i >= 0; i--) {
+                    sendFile(files[i], this);
+                }
+            }
+        },
+        toolbar: [
+            // 글꼴 설정
+            ['fontname', ['fontname']],
+            // 글자 크기 설정
+            ['fontsize', ['fontsize']],
+            // 굵기, 기울임꼴, 밑줄,취소 선, 서식지우기
+            ['style', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+            // 글자색
+            ['color', ['forecolor', 'color']],
+            // 표만들기
+            ['table', ['table']],
+            // 글머리 기호, 번호매기기, 문단정렬
+            ['para', ['ul', 'ol', 'paragraph']],
+            // 줄간격
+            ['height', ['height']],
+            // 그림첨부, 링크만들기, 동영상첨부
+            ['insert', ['picture', 'link']],
+            // 코드보기, 확대해서보기, 도움말
+            ['view', ['codeview']]
+        ],
+        // 추가한 글꼴
+        fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', '맑은 고딕', '궁서', '굴림체', '굴림', '돋음체', '바탕체'],
+        // 추가한 폰트사이즈
+        fontSizes: ['8', '9', '10', '11', '12', '14', '16', '18', '20', '22', '24', '28', '30', '36', '50', '72']
+
+    });
+
+    function sendFile(file, el) {
+        var form_data = new FormData();
+        form_data.append('file', file);
+        $.ajax({
+            data: form_data,
+            type: "POST",
+            url: '/fileUpload',
+            cache: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            processData: false,
+            success: function (img_name) {
+                $(el).summernote('editor.insertImage', img_name);
+            }
+        });
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    function fncAddPost() {
+        let postName = $('#postName').val();
+        if (postName == null || postName.length < 1) {
+            alert("제목을 입력해주세요.");
+            return false;
+        }
+        $('#addPostForm').submit();
+    }
+
+    $('#addPost-btn').on('click', function () {
+        fncAddPost();
+        $('#addPostForm').submit();
+    })
+
+    $("#cancelPost-btn").on('click', function () {
+        history.go(-1);
+    })
+
+</script>
+
+</body>
+</html>

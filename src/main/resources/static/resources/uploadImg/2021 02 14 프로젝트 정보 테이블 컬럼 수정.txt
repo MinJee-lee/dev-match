@@ -1,0 +1,19 @@
+alter table PROJECT
+    add t CLOB default '내용이 없습니다';
+
+update PROJECT
+set t=PROJECT_DETAIL;
+
+alter table project drop column PROJECT_DETAIL;
+
+alter table project rename column t to PROJECT_DETAIL;
+
+alter table PROJECT modify PROJECT_NAME VARCHAR2(200);
+
+alter table PROJECT modify APPLICANT_QUESTION_A VARCHAR2(250);
+
+alter table PROJECT modify APPLICANT_QUESTION_B VARCHAR2(250);
+
+alter table PROJECT modify APPLICANT_QUESTION_C VARCHAR2(250);
+
+alter table PROJECT add DETAIL_HTML CLOB;

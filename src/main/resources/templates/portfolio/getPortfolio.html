@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<meta charset="UTF-8">
+<head>
+
+    <!--<script>
+        $(function () {  /*제이쿼리를 쓰겠다 선언*/
+            /*id class name 으로 접근하는 3가지 방법이 있다 id가 유니크해서  id로 접근하는 게 쉬움(모든 태그에서 id가 겹치면 안됨)
+            * 개개인은 id로 하고 class는 여러가지할 때 선택*/
+            $("#test").on("click", function () {
+                alert("테스트 중입니다~")
+            })
+        })
+    </script>-->
+    <title>포트폴리오 상세보기</title>
+
+</head>
+<body>
+<div th:include="topToolBar.html"></div>
+<div class="container">
+
+    <div class="row">
+        <div class="col-lg-9 container">
+            <div class="subject">
+                <input type="hidden" id="portNo" name="portNo" th:value="${portfolio.getPortNo()}"/>
+
+                <!-- 포트폴리오 제목 -->
+                <h4 id="portTitle" th:text="${portfolio.portTitle}" style="margin: 90px 0; width: 100%"></h4>
+            </div>
+            <hr>
+            <div class="col-lg-11 container" id="-info-box">
+                <div class="col-md-12 mt-5 mb-5">
+
+                    <div class="col-md-12 mt-3 mb-3">
+
+                        <!-- 추가정보 양식 -->
+                        <div class="text-box-menu">
+                            <h6>프로젝트 시작일</h6>
+                            <h6>프로젝트 종료일</h6>
+                            <h6>인원 수</h6>
+                        </div>
+
+                        <!-- 추가정보 값 -->
+                        <div class="text-box-content">
+
+                            <!-- 프로젝트 시작일 -->
+                            <h6 th:text="${#dates.format(portfolio.portProjectStartDate, 'yyyy-MM-dd')}"></h6>
+
+                            <!-- 프로젝트 종료일 -->
+                            <h6 th:text="${#dates.format(portfolio.portProjectEndDate, 'yyyy-MM-dd')}"></h6>
+
+                            <!-- 인원 수 -->
+                            <h6 th:text="${portfolio.portMemberCnt}"></h6>
+                        </div>
+
+                        <!-- 포트폴리오 상세정보 -->
+                        <div class="portfolio-detail-box col-md-12">
+                            <p id="portfolio-detail-box" th:text="${portfolio.portDescription}"
+                               style="display: none"></p>
+                            <script>
+                                $('.portfolio-detail-box').html($('#portfolio-detail-box').text());
+                            </script>
+                        </div>
+
+                        <label class="col-form-label col-md-10 col-sm-10"></label>
+                        <a th:href="@{/port/portList(userId=${portfolio.userId})}">목록</a>
+                        <a th:href="@{/port/updatePort(portNo=${portfolio.portNo})}">수정</a>
+                        <a th:href="@{/port/deletePort(portNo=${portfolio.portNo})}">삭제</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+server:
+  servlet:
+    session:
+      timeout: 20m
+
+  port: 8282
+  error:
+    whitelabel:
+      enabled: false
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: twinkle7018@gmail.com
+    password: keuwljaertdpauka
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+  # session repository type을 정의하고 사용할 테이블 명을 정의함.
+  session:
+    store-type: jdbc
+    jdbc:
+      table-name: SPRING_SESSION
+
+  datasource:
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:oracle:thin:@localhost:1521/xe
+    username: spring
+    password: spring
+
+
+  devtools:
+    livereload:
+      enabled: true
+
+  servlet:
+    multipart:
+      file-size-threshold: 1MB
+      location: C:/Temp
+      max-file-size: 40MB
+      max-request-size: 40MB
+
+
+mybatis:
+  type-aliases-package: com.example.demo.*
+  mapper-locations: classpath:sqlMappers/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true  #언더바 -> 카멜케이스
+    call-setters-on-nulls: true

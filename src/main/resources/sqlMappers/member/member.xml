@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="member">
+    <select id="insertOne" resultType="com.example.demo.member.dto.MemberDTO$GetListReqDTO">
+        SELECT PRODUCT as product,
+               VERSION as version
+        FROM SYS.PRODUCT_COMPONENT_VERSION
+    </select>
+
+    <sql id="from_select">
+        SELECT USER_ID         as userId,
+               NAME            as name,
+               PASSWORD        as password,
+               EMAIL           as email,
+               ROLE            as role,
+               MEMBER_STATUS   as status,
+               REPORT_CNT      as reportCnt,
+               LAST_LOGIN_DATE as lastLoginDate,
+               PROFILE_IMAGE   as profileImg,
+               REG_DATE        as regDate,
+               PROJECT_NO      as projectNo,
+               PROJECT_WITHDRAWAL_DATE as projectWithdrawalDate
+        FROM MEMBER
+    </sql>
+
+    <insert id="addMember" parameterType="com.example.demo.member.vo.MemberVO">
+        INSERT INTO MEMBER(USER_ID,
+                           EMAIL,
+                           PASSWORD,
+                           NAME,
+                           ROLE,
+                           MEMBER_STATUS,
+                           GRADE,
+                           REG_DATE)
+        VALUES (#{userId},
+                #{email},
+                #{password},
+                #{name},
+                #{role},
+                #{status},
+                #{grade},
+                CURRENT_DATE)
+    </insert>
+
+    <select id="selectMember" parameterType="java.lang.String" resultType="com.example.demo.member.vo.MemberVO">
+        <!-- member.selectMember -->
+        <include refid="from_select"/>
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <select id="selectMemberList" parameterType="com.example.demo.member.vo.MemberVO"
+            resultType="com.example.demo.member.vo.MemberVO">
+        <include refid="from_select"/>
+        <if test="userId != null and userId != ''">
+            WHERE USER_ID = #{userId}
+        </if>
+        ORDER BY REG_DATE
+    </select>
+
+    <select id="selectReportMemberList" parameterType="com.example.demo.member.vo.MemberVO"
+            resultType="com.example.demo.member.vo.MemberVO">
+        <include refid="from_select"/>
+        <if test="userId != null and userId != ''">
+            WHERE USER_ID = #{userId}
+            AND REPORT_CNT BETWEEN 1 AND 6
+        </if>
+        ORDER BY REG_DATE
+    </select>
+
+    <select id="selectDormantMemberList" parameterType="com.example.demo.member.vo.MemberVO"
+            resultType="com.example.demo.member.vo.MemberVO">
+        <include refid="from_select"/>
+        WHERE MEMBER_STATUS = 'DORMANT'
+        <if test="userId != null and userId != ''">
+            AND USER_ID = #{userId}
+        </if>
+        ORDER BY REG_DATE
+    </select>
+
+    <select id="selectBlackMemberList" parameterType="com.example.demo.member.vo.MemberVO"
+            resultType="com.example.demo.member.vo.MemberVO">
+        <include refid="from_select"/>
+        WHERE MEMBER_STATUS = 'BLACK'
+        <!--        <if test="userId != null and userId != ''">-->
+        <!--            AND USER_ID = #{userId}-->
+        AND MEMBER_WITHDRAWAL = '0'
+        <!--        </if>-->
+        ORDER BY REG_DATE
+    </select>
+
+    <!--비밀번호 찾기-->
+    <select id="selectFindUserByPassword" resultType="memberVO" parameterType="map">
+        SELECT *
+        FROM MEMBER
+        WHERE USER_ID = #{userId}
+          AND EMAIL = #{email}
+    </select>
+
+    <!--아이디 중복체크-->
+    <select id="checkOverId" resultType="Integer" parameterType="String">
+        SELECT count(*)
+        FROM MEMBER
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <!--비밀번호 실패 횟수 증가-->
+    <update id="updateFailureCount">
+        UPDATE MEMBER
+        SET FAIL_CNT = FAIL_CNT + 1
+        WHERE USER_ID = #{userId}
+
+    </update>
+
+    <!--유저의 로그인 실패 이력 조회-->
+    <select id="checkFailureCount" resultType="Integer">
+        SELECT FAIL_CNT
+        FROM MEMBER
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <!--로그인 성공일때 fail count 초기화 -->
+    <update id="updateFailureCountReset">
+        /* member.updateFailureCountReset */
+        UPDATE
+            MEMBER
+        SET FAIL_CNT = 0
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <!--메일인증된 비밀번호 update-->
+    <update id="updatePassword" parameterType="map">
+        UPDATE
+            MEMBER
+        SET PASSWORD = #{password}
+        WHERE EMAIL = #{email}
+    </update>
+
+    <!--회원탈퇴-->
+    <update id="withdrawal" parameterType="string">
+        UPDATE
+            MEMBER
+        SET MEMBER_WITHDRAWAL = 1
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <!--비활성화-->
+    <update id="changeDormant" parameterType="map">
+        UPDATE
+            MEMBER
+        SET MEMBER_STATUS = #{memberStatus}
+        WHERE USER_ID= #{userId}
+    </update>
+
+    <update id="changeNormal" parameterType="map">
+        UPDATE
+            MEMBER
+        SET MEMBER_STATUS = #{memberStatus}
+        WHERE USER_ID= #{userId}
+    </update>
+
+
+</mapper>

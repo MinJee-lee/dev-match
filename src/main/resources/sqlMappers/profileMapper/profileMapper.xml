@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+        <!DOCTYPE mapper
+                PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="profileMapper">
+    <resultMap id="profileSelectMap" type="com.example.demo.member.vo.MemberVO">
+        <result property="userId" column="user_id"  jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="role" column="role" jdbcType="VARCHAR"/>
+        <result property="profileImg" column="profile_image" jdbcType="VARCHAR"/>
+        <result property="lastLoginDate" column="last_login_date" jdbcType="DATE"/>
+        <result property="regDate" column="reg_date" jdbcType="DATE"/>
+        <result property="projectWithdrawalDate" column="project_withdrawal_date" javaType="DATE"/>
+        <result property="reportCnt" column="report_cnt" jdbcType="NUMERIC"/>
+        <result property="selfIntro" column="self_intro" jdbcType="VARCHAR"/>
+        <result property="link" column="link" jdbcType="VARCHAR"/>
+        <result property="status" column="member_status" jdbcType="VARCHAR"/>
+
+        <!-- collection -->
+        <collection property="review" column="project_no" javaType="java.util.ArrayList" ofType="com.example.demo.common.vo.ReviewVO" select="getReviewList"/>
+    </resultMap>
+
+    <resultMap id="getAllProfileSelectMap" type="com.example.demo.profile.dto.ProfileDTO$GetAllProfileDTO">
+        <id property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="link" column="link" jdbcType="VARCHAR"/>
+        <result property="selfIntro" column="self_intro" jdbcType="VARCHAR"/>
+        <collection property="portfolio" column="user_id" select="getPortList"/>
+    </resultMap>
+
+
+    <update id="updateMyProfile" parameterType="com.example.demo.profile.dto.ProfileDTO$UpdateMyProfileDTO">
+        UPDATE MEMBER
+        SET
+            member_withdrawal = 0
+            <if test="selfIntro != null">
+            ,self_intro = #{selfIntro:VARCHAR}
+            </if>
+            <if test="profileImg != null">
+            ,profile_image = #{profileImg:VARCHAR}
+            </if>
+            <if test="link != null">
+            ,link=#{link:VARCHAR}
+            </if>
+        WHERE user_id = #{userId}
+    </update>
+
+    <select id="getPortList" resultType="portfolioVO">
+        SELECT portfolio_no as portNo,
+               user_id as userId,
+               port_title as portTitle,
+               reg_date regDate
+        FROM portfolio
+        WHERE user_id=#{userId}
+    </select>
+
+    <select id="getAllProfileList" parameterType="string" resultMap="getAllProfileSelectMap">
+        SELECT user_id ,
+               self_intro,
+               link
+        FROM member
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="getMyProfile" parameterType="string" resultType="com.example.demo.profile.dto.ProfileDTO$GetMyProfileDTO">
+        SELECT user_id as userId,
+               email,
+               name,
+               grade,
+               report_cnt as reportCnt,
+               profile_image as profileImg,
+               self_intro as selfIntro,
+               link
+        FROM member
+        WHERE user_id = #{user_id}
+    </select>
+
+    <select id="getAdminProfile" parameterType="string" resultType="com.example.demo.profile.dto.ProfileDTO$GetAdminProfileDTO">
+        SELECT user_id as userId,
+               email,
+               name,
+               role
+        FROM member
+        WHERE user_id = #{user_id} AND role = 'ADMIN'
+    </select>
+
+    <select id="getReviewList" parameterType="com.example.demo.common.vo.ReviewVO" resultType="reviewVO">
+        SELECT r.review_no reviewNo,
+               r.user_id userId,
+               r.project_no projectNo,
+               p.project_name projectName,
+               r.review_grade reviewGrade,
+               r.review_comment reviewComment
+        FROM review r, project p
+        WHERE r.user_id = #{userId} AND
+              r.project_no = p.project_no
+    </select>
+
+
+</mapper>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8">
+<head>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/lux/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <title>리뷰 목록</title>
+</head>
+<body>
+<div th:include="topToolBar.html" ></div>
+<table width="100%" border="0" cellpadding="0" style="margin-top:10px;">
+    <thead>
+    <tr>
+        <th class="column-title" width="100">프로젝트명</th>
+        <th class="column-title" width="100">grade</th>
+        <th class="column-title" width="100">comment</th>
+    </tr>
+    <tr>
+        <td colspan="11" bgcolor="808285" height="1"></td>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr class="" th:each="reviewVO:${reviewList}">
+    <input type="hidden" id="projectNo" th:value="${reviewVO.projectNo}"/>
+        <td th:text="${reviewVO.projectName}"/>
+        <td th:text="${reviewVO.reviewGrade}"/>
+        <td th:text="${reviewVO.reviewComment}"/>
+    </tr>
+    </tbody>
+</table>
+</body>

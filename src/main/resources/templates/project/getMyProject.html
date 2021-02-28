@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>내 프로젝트</title>
+
+    <link rel="stylesheet" href="/resources/css/additional.css">
+
+
+</head>
+
+<nav class="mb-0" th:include="topToolBar.html"></nav>
+
+<th:block th:if=${session.user.userId}==${myProject.leaderId}>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+
+            <div class="collapse navbar-collapse" id="navbarColor02">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/project/myProject">투두리스트</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/applicant/applicantList">신청서목록</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" style = "diplay:none;"/>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+</th:block>
+
+<body style="background-color: #f7f7f9">
+<div class="container">
+    <input type="hidden" id="userId" th:value="${session.user.userId}">
+    <input type="hidden" id="projectNo" th:value="${myProject.projectNo}">
+    <div id="myProjectHeader" class="row">
+        <h1 class="display-6" th:text="${myProject.projectName}"></h1>
+        <hr class="my-4">
+    </div>
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div class='alert alert-dismissible alert-danger' id="toast-message" style='display:none'>
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>TODO 등록 실패</strong>
+            </div>
+            <table class="table table-hover">
+                <tr>
+                    <td colspan="5">
+                        <input type="text" class="form-control" placeholder="TODO 작성" id="todoContent"
+                               style="background-color: #fbfbfb; border-bottom: 2px solid #888;">
+                    </td>
+                    <td>
+                        <button type="button" id="add-todo-btn" class="btn btn-outline-primary">ADD</button>
+                    </td>
+                </tr>
+                <tr id="todolist-header">
+                    <th>완료 여부</th>
+                    <td colspan="3">Todo List</td>
+                    <td>작성자</td>
+                    <td>작성일</td>
+                </tr>
+                <th:block th:each="todo:${myProject.todoList}">
+                    <tr>
+                        <th>
+
+                            <label class="btn btn-outline-success"
+                                   th:classappend="${todo.todoStatus==2} ? '' : active">
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                    <input type="checkbox" autocomplete="off" name="todoStatus"
+                                           th:checked="${todo.todoStatus==1}"
+                                           th:value="${todo.todoStatus==2} ? 1 : 2" th:data-todono="${todo.todoNo}" style="display: none"/>
+                                </div>
+                            </label>
+
+                        </th>
+                        <td colspan="3" th:text="${todo.todoContent}"></td>
+                        <td th:text="${todo.userId}"></td>
+                        <td th:text="${#dates.format(todo.regDate, 'yyyy-MM-dd')}"></td>
+                    </tr>
+                </th:block>
+            </table>
+        </div>
+
+        <div class="col-lg-3">
+            <table class="table table-hover">
+                <tr class="table-info">
+                    <td>팀장</td>
+                    <td th:text="${myProject.leaderId}"></td>
+                </tr>
+                <th:block th:each="member:${myProject.teamMember}">
+                    <th:block th:if="${member.userId}!=${myProject.leaderId}">
+                        <tr>
+                            <td>
+                                <img id="nav-profile-image" th:src="|/resources/uploadImg/${member.profileImg}|">
+                            </td>
+                            <td th:text="${member.userId}"></td>
+                        </tr>
+                    </th:block>
+                </th:block>
+            </table>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <hr>
+            <th:block th:if="${(myProject.leaderId == session.user.userId) && myProject.teamMember.size()!=1}">
+                <button type="button" id="updateLeader-btn" class="btn btn-outline-danger">권한 위임 후 탈퇴</button>
+            </th:block>
+            <th:block th:if="${(myProject.leaderId == session.user.userId) && myProject.teamMember.size()==1}">
+                <button type="button" id="delete-btn" class="btn btn-outline-warning">프로젝트 삭제</button>
+            </th:block>
+
+            <th:block th:if="${myProject.leaderId != session.user.userId}">
+                <button type="button" id="withdraw-btn" class="btn btn-outline-danger">프로젝트 탈퇴</button>
+            </th:block>
+
+
+            <th:block th:if="${myProject.teamMember.size()!=1}">
+                <div style="float: right;">
+                    <button type="button" id="end-btn" class="btn btn-outline-success">프로젝트 종료</button>
+                </div>
+            </th:block>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- 프로젝트 탈퇴 확인 pop up -->
+    <div class="modal" id="withdraw-popup">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">프로젝트 탈퇴 확인</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-close="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>정말 진행중인 프로젝트에서 탈퇴하시겠습니까?</p>
+                    <p><br/>프로젝트 탈퇴 후 <strong style="color:red;">일주일간 새로운 프로젝트 등록, 참여가 제한</strong>됩니다.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-close="close">취소</button>
+                    <button type="button" class="btn btn-primary" id="confirm-withdraw" >프로젝트 탈퇴하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 프로젝트 종료 동의 확인 pop up -->
+    <div class="modal" id="end-popup">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">프로젝트 종료 동의</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-close="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="text-align: center">
+                    <p>진행중인 프로젝트가 완료되었나요?</p>
+                    <p><br/>모든 팀원들의 동의가 완료되면 프로젝트를 종료합니다.<br/>
+                        포르젝트 종료 후에는 리뷰를 통해<br/>
+                        팀원들의 기여도를 평가할 수 있습니다.
+                        <br/></p>
+                    <strong>프로젝트 종료 동의 팀원 수</strong>
+                    <span>( </span>
+                    <span id="votedMemberCnt" th:text="${myProject.votedMember.size()}"></span>
+                    <span> / </span>
+                    <span id="teamMemberCnt" th:text="${myProject.teamMember.size()}"></span>
+                    <span> )</span>
+                </div>
+                <div class="modal-footer">
+                    <th:block th:each="votedMember:${myProject.votedMember}">
+                        <th:block th:if="${votedMember == session.user.userId}">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" data-close="close">이미 종료 투표에 참여하셨습니다.</button>
+                        </th:block>
+                    </th:block>
+                    <th:block th:if="${!myProject.votedMember.contains(session.user.userId)}">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" data-close="close">취소</button>
+                        <button type="button" class="btn btn-primary" id="confirm-end" >프로젝트 종료 동의</button>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 프로젝트 삭제 확인 pop up -->
+    <div class="modal" id="delete-popup">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">프로젝트 삭제</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-close="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="text-align: center">
+                    <p>프로젝트 삭제 확인</p>
+                    <br/><strong>정말 진행중인 프로젝트를 삭제하시겠습니까?</strong><br/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-close="close">취소</button>
+                    <button type="button" class="btn btn-warning" id="confirm-delete" >프로젝트 삭제</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 프로젝트 삭제 확인 pop up -->
+    <div class="modal" id="updateLeader-popup">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">팀장 권한 위임</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-close="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="text-align: center">
+                    <h4>권한을 위임할 팀원 선택</h4><br/>
+
+                    <div>
+                        <table class="table table-hover">
+                            <th:block th:each="member:${myProject.teamMember}">
+                                <th:block th:if="${member.userId}!=${myProject.leaderId}">
+                                    <tr>
+                                        <td>
+                                            <input type="radio" id="afterLeaderId" name="afterLeaderId" th:value="${member.userId}">
+                                        </td>
+                                        <th th:text="${member.profileImg}"></th>
+                                        <td th:text="${member.userId}"></td>
+                                    </tr>
+                                </th:block>
+                            </th:block>
+                        </table>
+
+                    </div>
+                    <br/>
+                    <strong>정말 팀장 권한을 위임하고<br/> 진행중인 프로젝트를 탈퇴 하시겠습니까?</strong><br/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-close="close">취소</button>
+                    <button type="button" class="btn btn-warning" id="confirm-updateLeader" >권한 위임 후 탈퇴하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    let projectNo = $('#projectNo').val();
+    let userId = $('#userId').val();
+
+    $('#add-todo-btn').on("click", function () {
+        $.ajax({
+            type: 'POST',
+            url: '/project/addTodo',
+            data: JSON.stringify({
+                userId: userId,
+                projectNo: projectNo,
+                todoContent: $('#todoContent').val(),
+            }),
+            dataType: 'text',
+            contentType: 'application/json',
+            success: function (data) {
+                const todoVO = JSON.parse(data);
+                const regDate = todoVO.regDate.substring(0, 10);
+
+                let html =
+                    "<tr class=\"table-secondary\">\n" +
+                    "   <th>\n" +
+                    "       <div class=\"btn-group btn-group-toggle\" data-toggle=\"buttons\">\n" +
+                    "           <label class=\"btn btn-outline-success\">\n" +
+                    "               <input type=\"checkbox\" autocomplete=\"off\">\n" +
+                    "           </label>\n" +
+                    "       </div>\n" +
+                    "   </th>\n" +
+                    "   <td colspan=\"3\">" + todoVO.todoContent + "</td>\n" +
+                    "   <td>" + todoVO.userId + "</td>\n" +
+                    "   <td>" + regDate + "</td>\n" +
+                    "</tr>"
+
+                $('#todolist-header').after(html)
+                $('#todoContent').val("");
+            },
+            error: function (e) {
+                $('#toast-message').fadeIn(400).delay(1000).fadeOut(400);
+            }
+
+        })
+    })
+
+
+    $('input[name=todoStatus]').on("click" , function () {
+        let todoNo = $(this).data("todono")
+        let todoStatus = $(this).val()
+
+        $.ajax({
+            type: 'POST',
+            url: '/project/updateTodoStatus',
+            data: JSON.stringify({
+                todoNo: todoNo,
+                todoStatus: todoStatus
+            }),
+            context: this,
+            contentType: 'application/json',
+            success: function (data) {
+                if(todoStatus === "1") {
+                    $(this).attr('value',2)
+                } else {
+                    $(this).attr('value',1)
+                }
+
+            }
+        })
+
+    })
+
+    $('#withdraw-btn').click(function(){
+        $('#withdraw-popup').bPopup();
+    });
+    $('#end-btn').click(function(){
+        $('#end-popup').bPopup();
+    });
+    $('#delete-btn').click(function(){
+        $('#delete-popup').bPopup();
+    });
+    $('#updateLeader-btn').click(function(){
+        $('#updateLeader-popup').bPopup();
+    });
+
+
+    $("button[data-close=close]").click(function(){
+        $('.modal').bPopup().close();
+        $('.modal').bPopup().close();
+        $('.modal').bPopup().close();
+    });
+
+
+
+    $('#confirm-withdraw').click(function () {
+        $.ajax({
+            type: 'GET',
+            url: '/project/withdraw',
+            data: {
+                userId:userId
+            },
+            success: function (data) {
+                if(data == "1") {
+                    alert("프로젝트 탈퇴 완료")
+                    window.location.replace("/project/getProjectList");
+                } else {
+                    alert("새로고침 후 다시 시도해주세요.")
+                }
+
+            }
+        })
+    })
+
+    $('#confirm-end').click(function () {
+        $.ajax({
+            type: 'POST',
+            url: '/project/endProject',
+            data: JSON.stringify({
+                teamMemberCnt: $('#teamMemberCnt').text(),
+                votedMemberCnt: $('#votedMemberCnt').text(),
+                projectNo:projectNo,
+                userId:userId
+            }),
+            contentType : 'application/json',
+            success: function (data) {
+                if(data == "1") {
+                    alert("프로젝트 종료 투표 완료")
+                    window.location.replace("/welcome");
+                } else {
+                    alert("새로고침 후 다시 시도해주세요.")
+                }
+
+            }
+        })
+    })
+
+    $('#confirm-delete').click(function () {
+        $.ajax({
+            type: 'GET',
+            url: '/project/deleteProject',
+            data: {
+                projectNo:projectNo
+            },
+            success: function (data) {
+                if(data == "1") {
+                    alert("프로젝트 삭제 완료")
+                    window.location.replace("/project/getProjectList");
+                } else {
+                    alert("새로고침 후 다시 시도해주세요.")
+                }
+
+            }
+        })
+    })
+
+    $('#confirm-updateLeader').click(function () {
+        $.ajax({
+            type: 'POST',
+            url: '/project/updateProjectLeader',
+            data: JSON.stringify({
+                projectNo:projectNo,
+                beforeLeaderId:userId,
+                afterLeaderId:$('input[id=afterLeaderId]:checked').val()
+            }),
+            contentType : 'application/json',
+            success: function (data) {
+                if(data == "1") {
+                    alert("권한 위임 후 탈퇴 완료")
+                    window.location.replace("/project/getProjectList");
+                } else {
+                    alert("새로고침 후 다시 시도해주세요.")
+                }
+
+            }
+        })
+    })
+
+</script><!--  /////////////////////// JQuery //////////////////////// -->
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="/js/bpopup/jquery.bpopup.js"></script>
+</body>
+</html>

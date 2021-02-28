@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="projectMapper">
+
+	<resultMap id="projectSelectMap" type="projectVO">
+		<id		property="projectNo"	    		column="project_no"         		jdbcType="INTEGER"/>
+		<result property="leaderId"    				column="user_id"      				jdbcType="VARCHAR"/>
+		<result property="projectName" 				column="project_name"      			jdbcType="VARCHAR"/>
+		<result property="progressClassification"   column="progress_Classification"    jdbcType="NUMERIC"/>
+		<result property="projectCategory"    		column="project_category"      		jdbcType="NUMERIC"/>
+		<result property="preStartDate"    			column="pre_start_date"      		jdbcType="DATE"/>
+		<result property="prePeriod"    			column="pre_period"      			jdbcType="NUMERIC"/>
+		<result property="regDate"    				column="reg_date"      				jdbcType="DATE"/>
+		<result property="applicationDeadline"    	column="application_deadline"      	jdbcType="DATE"/>
+		<result property="meetingMethod"    		column="meeting_method"      		jdbcType="NUMERIC"/>
+		<result property="meetingLocation"    		column="meeting_location"      		jdbcType="VARCHAR"/>
+		<result property="applicantQuestionA"    	column="applicant_question_a"      	jdbcType="VARCHAR"/>
+		<result property="applicantQuestionB"    	column="applicant_question_b"      	jdbcType="VARCHAR"/>
+		<result property="applicantQuestionC"    	column="applicant_question_c"      	jdbcType="VARCHAR"/>
+		<result property="projectViewCnt"    		column="project_view_cnt"      		jdbcType="NUMERIC"/>
+		<result property="projectStatus"    		column="project_status"      		jdbcType="NUMERIC"/>
+		<result property="endProjectCnt"    		column="endProject_cnt"   			jdbcType="NUMERIC"/>
+		<result property="projectDetail"    		column="project_detail"      		jdbcType="VARCHAR"/>
+		<result property="detailHtml"    			column="detail_html"      			jdbcType="VARCHAR"/>
+		<result property="endDate"    				column="end_date"      				jdbcType="DATE"/>
+		<result property="recruitmentMemberCnt"    	column="recruitment_member_cnt"     jdbcType="NUMERIC"/>
+
+		<!-- association -->
+		<association property="applicantsCnt"		column="project_no"			select="getApplicantsCntByProjectNo"/>
+		<association property="bookmarkNo"			column="{projectNo=PROJECT_NO,bookmarkCheckId=bookmarkCheckId}" 	 select="getBookmarkCheckByProjectNo"/>
+		<!-- collection -->
+		<collection property="teamMember" 			column="project_no" javaType="java.util.ArrayList" ofType="memberVO" select="getProjectMemberByProjectNo"/>
+		<collection property="skillHashTag" 		column="project_no" select="getProjectHashTagByProjectNo"/>
+		<collection property="projectReply" 		column="{projectNo=PROJECT_NO,searchVO.startRowNum=searchVO.startRowNum,searchVO.endRowNum=searchVO.endRowNum}" select="getProjectReplyByProjectNo"/>
+
+	</resultMap>
+
+
+	<resultMap id="getMyProjectByProjectNo" type="myProjectVO">
+		<id			property="projectNo"	column="project_no"		jdbcType="NUMERIC"/>
+		<result		property="projectName"	column="project_name"	jdbcType="VARCHAR"/>
+		<result		property="leaderId"		column="user_id"	jdbcType="VARCHAR"/>
+		<collection property="todoList" 	column="project_no" 	select="getTodoListByProjectNo"/>
+		<collection property="teamMember" 	column="project_no" 	select="getProjectMemberByProjectNo"/>
+		<collection property="votedMember"	column="project_no" 	select="getVotedMemberByProjectNo"/>
+	</resultMap>
+
+
+
+
+	<insert id="addProject" parameterType="projectVO" useGeneratedKeys="true" keyColumn="PROJECT_NO" keyProperty="projectNo">
+		INSERT
+		INTO PROJECT (
+			PROJECT_NO,
+			USER_ID,
+			PROJECT_NAME,
+			PROGRESS_CLASSIFICATION,
+			PROJECT_CATEGORY,
+			PRE_START_DATE,
+			PRE_PERIOD,
+			MEETING_METHOD,
+			MEETING_LOCATION,
+			APPLICATION_DEADLINE,
+			PROJECT_DETAIL,
+			REG_DATE,
+			APPLICANT_QUESTION_A,
+			APPLICANT_QUESTION_B,
+			APPLICANT_QUESTION_C,
+			RECRUITMENT_MEMBER_CNT,
+		    DETAIL_HTML
+		)
+		VALUES(seq_project_no.NEXTVAL,
+		       #{leaderId},
+		       #{projectName},
+		       #{progressClassification},
+		       #{projectCategory},
+		       #{preStartDate},
+		       #{prePeriod},
+		       #{meetingMethod},
+		       #{meetingLocation:VARCHAR},
+		       #{applicationDeadline},
+		       #{projectDetail},
+		       SYSDATE,
+		       #{applicantQuestionA:VARCHAR},
+		       #{applicantQuestionB:VARCHAR},
+		       #{applicantQuestionC:VARCHAR},
+		       #{recruitmentMemberCnt},
+		       #{detailHtml})
+
+	</insert>
+
+
+	<update id="updateMemberProjectNo" parameterType="map">
+		UPDATE MEMBER
+		<set>
+		    PROJECT_NO = #{projectNo}
+		</set>
+		WHERE USER_ID = #{userId}
+	</update>
+
+	<select id="getProject"  parameterType="hashMap" resultMap="projectSelectMap">
+
+		SELECT P.*, #{userId} AS bookmarkCheckId, #{searchVO.startRowNum} AS "searchVO.startRowNum", #{searchVO.endRowNum} AS "searchVO.endRowNum"
+		FROM PROJECT P
+		WHERE PROJECT_NO = #{projectNo}
+
+	</select>
+
+
+	<update id="updateViewCnt" parameterType="hashMap">
+		UPDATE PROJECT
+		SET PROJECT_VIEW_CNT = PROJECT_VIEW_CNT + 1
+		WHERE PROJECT_NO = #{projectNo}
+	</update>
+
+
+	<insert id="addProjectReply" parameterType="projectReplyDTO" useGeneratedKeys="true" keyColumn="REPLY_NO" keyProperty="replyNo">
+		INSERT
+		INTO REPLY(REPLY_NO,
+		           PROJECT_NO,
+		           USER_ID,
+		           REPLY_CONTENT,
+		           REG_DATE)
+		VALUES (SEQ_REPLY_NO.NEXTVAL,
+		        #{projectNo},
+		        #{userId},
+		        #{replyContent},
+		        SYSDATE)
+	</insert>
+
+
+	<select id="getMyProject" parameterType="int" resultMap="getMyProjectByProjectNo">
+		SELECT PROJECT_NO,
+		       PROJECT_NAME,
+			   USER_ID
+		FROM   PROJECT
+		WHERE  PROJECT_NO = #{projectNo}
+	</select>
+
+
+	<insert id="addTodo" parameterType="addTodoDTO" useGeneratedKeys="true" keyColumn="TODO_NO" keyProperty="todoNo" >
+		INSERT INTO TODO (TODO_NO,
+		                  PROJECT_NO,
+		                  USER_ID,
+		                  TODO_CONTENT,
+		                  REG_DATE)
+		VALUES (SEQ_TODO_NO.NEXTVAL,
+		        #{projectNo},
+		        #{userId},
+		        #{todoContent},
+		        SYSDATE)
+	</insert>
+
+	<select id="getTodo" parameterType="int" resultType="todoVO">
+		SELECT TODO_NO,
+			   PROJECT_NO,
+			   USER_ID,
+			   TODO_CONTENT,
+			   REG_DATE
+		FROM TODO
+		WHERE TODO_NO = #{value}
+	</select>
+
+
+	<insert id="addBookmark" parameterType="projectBookmarkDTO" useGeneratedKeys="true" keyColumn="BOOKMARK_NO" keyProperty="bookmarkNo">
+		INSERT INTO BOOKMARK(BOOKMARK_NO,
+		                     USER_ID,
+		                     PROJECT_NO)
+		VALUES (SEQ_BOOKMARK_NO.NEXTVAL, #{userId} , #{projectNo})
+	</insert>
+	
+
+	<delete id="deleteBookmark" parameterType="projectBookmarkDTO">
+		DELETE
+		FROM BOOKMARK
+		WHERE BOOKMARK_NO = #{bookmarkNo}
+	</delete>
+
+
+	<select id="getProjectList" parameterType="projectSearchDTO" resultMap="projectSelectMap">
+		SELECT *
+		FROM ( SELECT ROW_NUMBER() OVER(ORDER BY
+		<choose>
+			<when test="sort == 1">P.REG_DATE DESC</when>
+			<when test="sort == 2">P.APPLICATION_DEADLINE DESC</when>
+			<when test="sort == 3">P.PROJECT_VIEW_CNT DESC</when>
+			<otherwise>P.PROJECT_STATUS , P.PROJECT_NO DESC </otherwise>
+		</choose>
+		) RN, P.*, B.BOOKMARK_NO, #{userId:VARCHAR} AS bookmarkCheckId, 1 AS "searchVO.startRowNum", 2 AS "searchVO.endRowNum"
+		FROM PROJECT P, ( SELECT BOOKMARK_NO
+						  FROM BOOKMARK
+						  WHERE USER_ID = #{userId:VARCHAR} ) B
+			,(SELECT HASHTAG, PROJECT_NO
+			  FROM HASHTAG) H
+		<where>
+			P.PROJECT_NO = B.BOOKMARK_NO(+)
+			AND P.PROJECT_NO = H.PROJECT_NO(+)
+			<if test="projectCategory != null">
+				AND
+				<foreach item="projectCategory" collection="projectCategory" separator="OR" open="(" close=")">
+						 P.PROJECT_CATEGORY = #{projectCategory}
+				</foreach>
+			</if>
+			<if test="meetingMethod != null">
+				AND
+				<foreach item="meetingMethod" collection="meetingMethod" separator="OR" open="(" close=")">
+					P.MEETING_METHOD = #{meetingMethod}
+				</foreach>
+			</if>
+
+			<if test="searchCondition != null">
+				<if test="searchCondition == 1">AND P.PROJECT_NAME LIKE '%'||#{searchKeyword}||'%' </if>
+				<if test="searchCondition == 2">AND H.HASHTAG LIKE '%'||#{searchKeyword}||'%'</if>
+				<if test="searchCondition == 3">AND P.PROJECT_DETAIL LIKE '%'||#{searchKeyword}||'%' </if>
+			</if>
+
+			<if test="projectStatus != null">
+				AND
+				<foreach item="projectStatus" collection="projectStatus" separator="OR" open="(" close=")">
+					P.PROJECT_STATUS = #{projectStatus}
+				</foreach>
+			</if>
+
+			)
+		</where>
+		WHERE RN BETWEEN #{startRowNum} AND #{endRowNum}
+
+	</select>
+
+
+	<delete id="deleteProject" parameterType="int">
+		DELETE
+		FROM  PROJECT
+		WHERE PROJECT_NO = #{value}
+	</delete>
+
+
+	<update id="withdrawProject" parameterType="string">
+		UPDATE  MEMBER
+		SET 	PROJECT_NO = NULL, PROJECT_WITHDRAWAL_DATE = SYSDATE
+		WHERE 	USER_ID = #{value}
+	</update>
+
+
+	<update id="updateProjectLeader" parameterType="hashMap">
+		UPDATE PROJECT
+		SET USER_ID = #{afterLeaderId}
+		WHERE PROJECT_NO = #{projectNo}
+	</update>
+
+
+	<update id="updateMemberProjectToNull" parameterType="string">
+		UPDATE MEMBER
+		SET PROJECT_NO = NULL
+		WHERE USER_ID = #{value}
+	</update>
+
+	<update id="updateApplicantStatus" parameterType="hashMap">
+		UPDATE APPLICANT
+		SET APPLICANT_STATUS = 6
+		WHERE PROJECT_NO = #{projectNo} AND APPLICANT_STATUS = 5;
+	</update>
+
+	
+	<insert id="addEndProjectCount" parameterType="hashMap">
+		INSERT INTO END_VOTE (END_VOTE_NO, USER_ID, PROJECT_NO)
+		VALUES (seq_vote_no.NEXTVAL, #{userId}, #{projectNo})
+	</insert>
+
+
+	<update id="updateProjectStatus" parameterType="hashMap">
+		UPDATE PROJECT
+		SET PROJECT_STATUS = 3
+		WHERE PROJECT_NO = #{projectNo}
+	</update>
+
+	<update id="updateProjectNoOfTeamMembers" parameterType="hashMap">
+		UPDATE MEMBER
+		SET PROJECT_NO = REPLACE(PROJECT_NO,#{projectNo},NULL)
+	</update>
+
+
+	<insert id="addReview" parameterType="list">
+		INSERT INTO REVIEW (REVIEW_NO, USER_ID, PROJECT_NO, REVIEW_GRADE, REVIEW_COMMENT)
+			SELECT SEQ_REVIEW_NO.NEXTVAL, T.*
+			FROM (
+				<foreach collection="list" item="item" index="index" separator="UNION ALL">
+					<if test = "item.projectNo != 0" >
+						SELECT #{item.userId} ,
+							   #{item.projectNo} ,
+							   #{item.reviewGrade} ,
+							   #{item.reviewComment:VARCHAR}
+						FROM SYS.DUAL
+					</if>
+				</foreach>
+			) T
+	</insert>
+
+	<update id="updateTodoStatus" parameterType="map">
+		UPDATE TODO
+		SET TODO_STATUS = #{todoStatus}
+		WHERE TODO_NO = #{todoNo}
+	</update>
+
+	<select id="getProjectReply" parameterType="int" resultType="replyVO">
+		SELECT r.REPLY_NO,
+			   r.USER_ID as replyUserId,
+			   r.REPLY_CONTENT,
+			   r.REG_DATE,
+			   m.PROFILE_IMAGE	as replyUserImg
+		FROM REPLY r, MEMBER m
+		WHERE r.PROJECT_NO = m.PROJECT_NO AND REPLY_NO = #{value}
+	</select>
+
+	<insert id="addHashtag" parameterType="projectVO">
+		INSERT INTO HASHTAG (HASHTAG_NO, HASHTAG, PROJECT_NO)
+		VALUES (SEQ_HASHTAG_NO.nextval, #{skillHashTag}, #{projectNo})
+	</insert>
+
+
+	<select id = "getApplicantsCntByProjectNo" 	resultType="int">
+		SELECT COUNT(*)
+		FROM   APPLICANT
+		WHERE  PROJECT_NO = #{projectNo}
+	</select>
+
+	<select id = "getProjectMemberByProjectNo" 	resultType="memberVO">
+		SELECT USER_ID,
+		       PROFILE_IMAGE as profileImg
+		FROM   MEMBER
+		WHERE  PROJECT_NO = #{projectNo}
+	</select>
+
+	<select id = "getProjectHashTagByProjectNo" resultType="string">
+		SELECT HASHTAG
+		FROM   HASHTAG
+		WHERE  PROJECT_NO = #{projectNo}
+	</select>
+
+	<select id = "getProjectReplyByProjectNo" 	parameterType="map" resultType="replyVO">
+		SELECT *
+		FROM (
+				 SELECT ROW_NUMBER() over (ORDER BY r.REG_DATE DESC) as num,
+						r.REPLY_NO,
+						r.USER_ID as replyUserId,
+						r.REPLY_CONTENT,
+						r.REG_DATE,
+				        r.PROJECT_NO,
+						m.PROFILE_IMAGE	as replyUserImg
+				 FROM REPLY r, MEMBER m
+				 WHERE r.USER_ID = m.USER_ID AND
+					 r.PROJECT_NO = #{projectNo}
+				 ORDER BY REG_DATE DESC
+			 )
+		WHERE NUM BETWEEN #{searchVO.startRowNum} AND #{searchVO.endRowNum}
+	</select>
+
+	<select id = "getTodoListByProjectNo" 		resultType="todoVO">
+		SELECT TODO_NO,
+		       PROJECT_NO,
+		       USER_ID,
+		       TODO_CONTENT,
+		       TODO_STATUS,
+		       REG_DATE
+		FROM   TODO
+		WHERE  PROJECT_NO = #{projectNo}
+		ORDER BY TODO_STATUS DESC, TODO_NO DESC
+	</select>
+
+	<select id = "getVotedMemberByProjectNo"	resultType="string">
+		SELECT USER_ID
+		FROM END_VOTE
+		WHERE PROJECT_NO = #{projectNo}
+	</select>
+
+	<select id = "getBookmarkCheckByProjectNo" 	parameterType="map" resultType="int">
+		SELECT BOOKMARK_NO
+		FROM BOOKMARK
+		WHERE PROJECT_NO = #{projectNo} AND USER_ID = #{bookmarkCheckId}
+	</select>
+
+	<select id="replyTotalCount" parameterType="map" resultType="int">
+		select COUNT(*)
+		FROM REPLY
+		WHERE PROJECT_NO=#{projectNo}
+	</select>
+
+</mapper>

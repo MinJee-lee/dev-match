@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>리뷰작성</title>
+
+    <link rel="stylesheet" href="/resources/css/additional.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/lux/bootstrap.min.css">
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/js/bpopup/jquery.bpopup.min.js"></script>
+
+    <script>
+        $(function () {
+            $('#form-submit').on("click", function () {
+                $('.review-form').submit()
+            })
+        })
+
+    </script>
+</head>
+<body style="background-color: #f7f7f9">
+    <div class="wrapper">
+
+        <div id="myProjectHeader" class="row" >
+            <h1 class="display-6" th:text="${myProject.projectName}"></h1>
+            <hr class="my-4">
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <form class="review-form" name="addReviewDTO" action="/project/addReviewer" method="post">
+                    <table class="table table-hover">
+                        <tr class="table-info">
+                            <td width="20%">팀원</td>
+                            <td colspan="5">평가 작성</td>
+                        </tr>
+
+                        <th:block th:each="member,num:${myProject.teamMember}">
+                            <th:block th:if="${member.userId}!=${session.user.userId}">
+                                    <input type="text" th:name="|reviewList[${num.index}].userId|" th:value="${member.userId}">
+                                    <input type="text" th:name="|reviewList[${num.index}].projectNo|" th:value="${myProject.projectNo}">
+                                    <tr>
+                                        <td width="20%">
+                                            <span th:text="${member.profileImg}"></span>
+                                            <span th:text="${member.userId}"></span>
+                                        </td>
+
+                                        <td width="30%">
+                                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                <label class="btn btn-outline-success active">
+                                                    <input type="radio" th:name="|reviewList[${num.index}].reviewGrade|" autocomplete="off" checked="" value="1"> 추천
+                                                </label>
+                                                <label class="btn btn-outline-primary">
+                                                    <input type="radio" th:name="|reviewList[${num.index}].reviewGrade|" autocomplete="off" value="0"> 보통
+                                                </label>
+                                                <label class="btn btn-outline-primary">
+                                                    <input type="radio" th:name="|reviewList[${num.index}].reviewGrade|" autocomplete="off" value="-1"> 비추천
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td width="50%">
+                                            <input type="text" class="form-control" placeholder="평가내용 작성" th:name="|reviewList[${num.index}].reviewComment|"
+                                                   style="background-color: #bfbfbf; border-bottom: 2px solid #888;">
+                                        </td>
+                                    </tr>
+
+                                    <tr><td colspan="100%"></td></tr>
+
+                            </th:block>
+                        </th:block>
+
+                        <button type="button" id="form-submit" class="btn btn-outline-primary">Primary</button>
+
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

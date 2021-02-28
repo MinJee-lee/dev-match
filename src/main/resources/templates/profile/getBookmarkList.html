@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8">
+<head>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.0/lux/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <title>북마크 목록</title>
+
+    <script>
+        $(function (){
+            $("#deleteBookmarkList").on("click", function (){
+                $.ajax({
+                    url:"/restProfile/deleteBookmarkList",
+                    type:"get",
+                    contentType:"application/json",
+                    data:{bookmarkNo:$("#bookmarkNo").val()}, /*이 부분이 URL에서 ? 뒷 부분에 해당 $가 제이쿼리, #아이디, val()가 html에서 value*/
+                    success:function (data) {
+                        alert(data)
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+
+<body>
+<div th:include="topToolBar.html" ></div>
+<table width="100%" border="0" cellpadding="0" style="margin-top:10px;">
+    <thead>
+    <tr>
+        <th class="column-title" width="100">제목</th>
+        <th class="column-title" width="100">작성자</th>
+        <th class="column-title" width="100">작성날짜</th>
+        <th class="column-title" width="100"></th>
+    </tr>
+
+    <tr>
+        <td colspan="11" bgcolor="808285" height="1"></td>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr class="" th:each="bookmarkVO:${bookmarkList}">
+        <input type="hidden" id="bookmarkNo" th:value="${bookmarkVO.bookmarkNo}"/>
+        <td>
+        <a th:href="@{/comm/getPost(postNo=${bookmarkVO.post.postNo})}"
+           th:text="${bookmarkVO.post.postName}"></a>
+        </td>
+        <td th:text="${bookmarkVO.post.userId}"></td>
+        <td th:text="${bookmarkVO.post.regDate}"></td>
+        <td>
+            <button id="deleteBookmarkList" value="delete">
+            삭제
+        </button></td>
+    </tr>
+
+
+
+    </tbody>
+
+</table>
+</body>

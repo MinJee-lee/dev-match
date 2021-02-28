@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html class=" " lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Member manage Black list page</title>
+
+    <link href="/resources/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/resources/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/resources/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <link href="/resources/vendors/animate.css/animate.min.css" rel="stylesheet">
+    <link href="/resources/build/css/custom.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            color: #73879C;
+            background: white;
+            font-family: "Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1.471;
+        }
+    </style>
+</head>
+<body class="nav-md">
+<nav th:include="topToolBar.html"></nav>
+<div class="container body">
+    <div class="main_container">
+        <div class="table-responsive">
+            <table class="table table-striped jambo_table bulk_action">
+                <thead>
+                <tr class="headings">
+                    <th class="column-title">ID</th>
+                    <th class="column-title">Name</th>
+                    <th class="column-title">Email</th>
+                    <th class="column-title">status</th>
+                    <th class="column-title">Register Date</th>
+                    <th class="column-title no-link last"><span class="nobr">Action</span>
+                    <th class="column-title no-link last"><span class="nobr">Action</span>
+                    </th>
+                    <th class="bulk-actions" colspan="6">
+                        <a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="even pointer" th:each="member : ${memberBlackList}">
+                    <td class=" " th:text="${member.userId}"></td>
+                    <td class=" " th:text="${member.name}"></td>
+                    <td class=" " th:text="${member.email}"></td>
+                    <td class=" " th:text="${member.status}"></td>
+                    <td class=" " th:text="${member.regDate}"></td>
+                    <td class=" last"><a class="changeDormant" href="#" th:data-userid="${member.userId}"> 비 활성화 전환</a>
+                        <!--                    <td class=" last"><a id="withdrawal" href="#" th:data-userid="${member.userId}">회원 탈퇴</a>-->
+                        <!--                    <td class=" last"><a th:href="@{/admin/changeDormant(userId=${member.userId})}">비 활성화 전환</a>-->
+                    <td class=" last"><a th:href="@{/admin/withdrawal(userId=${member.userId})}">회원 탈퇴</a>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+
+    $('.changeDormant').click(function () {
+        $.ajax({
+            type:'GET',
+            url : '/admin/changeDormant',
+            data : {
+                userId : $(this).attr('data-userid')
+            },
+            context : this,
+            success: function (data) {
+                alert("회원 비 활성화 전환 완료.")
+                $(this).parent().parent().remove();
+            }
+
+        })
+    })
+
+    $('#withdrawal').click(function () {
+        $.ajax({
+            type:'GET',
+            url : '/admin/withdrawal',
+            data : {
+                userId : $(this).attr('data-userid')
+            },
+            context : this,
+            success: function (data) {
+                alert("회원 탈퇴 완료.")
+                $(this).parent().parent().remove();
+            }
+
+        })
+    })
+</script>
+</body>
+
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<!--  /////////////////////// JQuery //////////////////////// -->
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="/js/bpopup/jquery.bpopup.min.js"></script>
+	
+	<!--  ////////////////////// JavaScript /////////////////////// -->
+	<script type="text/javascript">
+		
+    	$('#updateApplicant_2_btn').on("click", function(){
+    		var applicantNo = $(this).attr('data-applicantno')
+    		self.location = "/applicant/updateApplicantStatus?applicantStatus=2&applicantNo="+applicantNo;
+    	});
+	    
+		
+    	$('#updateApplicant_3_btn').on("click", function(){
+    		var applicantNo = $(this).attr('data-applicantno')
+    		self.location = "/applicant/updateApplicantStatus?applicantStatus=3&applicantNo="+applicantNo;
+    	});
+	
+	</script>
+	
+<title>getApplicant</title>
+</head>
+<body>
+<form id="detailForm">
+	    <h1><label for="Title" class="control-label">신   청   서</label></h1>
+	    <br>
+
+			<div th:if="${applicantVO.projectVO.applicantQuestionA}!=null">
+				<strong><div style="font-weight:bold;" th:text="${applicantVO.projectVO.applicantQuestionA}"></div></strong>
+				<div th:text="${applicantVO.applicantAnswerA}"></div><br/>
+				
+				<div th:if="${applicantVO.projectVO.applicantQuestionB}!=null">
+					<strong><div style="font-weight:bold;" th:text="${applicantVO.projectVO.applicantQuestionB}"></div></strong>
+					<div th:text="${applicantVO.applicantAnswerB}"></div><br/>
+				
+					<div th:if="${applicantVO.projectVO.applicantQuestionC}!=null">
+						<strong><div style="font-weight:bold;" th:text="${applicantVO.projectVO.applicantQuestionC}"></div></strong>
+						<div th:text="${applicantVO.applicantAnswerC}"></div><br/>
+					</div>
+				</div>
+			</div>
+
+		
+
+			<label for="projectDetail" style="font-weight:bold;">자기소개</label>
+			<div th:text="${applicantVO.introToMember}"></div>
+			</br>
+
+		
+		<div th:if="${applicantVO.applicantStatus}==1" style="float:right;">
+			<div id = "delete">
+				<button type="button" id="updateApplicant_2_btn" class="btn btn-success " th:data-applicantno="${applicantVO.applicantNo}">수락</button>
+				<button type="button" id="updateApplicant_3_btn" class="btn btn-primary " th:data-applicantno="${applicantVO.applicantNo}">거절</button>
+			</div>
+		</div>	
+</form>
+</body>
+</html>

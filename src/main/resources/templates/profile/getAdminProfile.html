@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8">
+<head>
+    <title>관리자 프로필 조회</title>
+</head>
+<body>
+
+<div th:include="topToolBar.html" ></div>
+
+    <input type="hidden" id="userId" name="userId" th:value="${profile.getUserId()}">
+        <div th:text="${profile.userId}"></div>
+        <div th:text="${profile.email}"></div>
+        <div th:text="${profile.name}"></div>
+        <div th:text="${profile.role}"></div>
+
+</body>

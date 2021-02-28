@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>포트폴리오 등록</title>
+</head>
+<body>
+<div th:include="topToolBar.html"></div>
+<div class="container">
+
+
+<form id="addPortfolioForm" th:method="post" th:action="@{/port/addPort}" enctype="multipart/form-data">
+
+    <div class="form-group row"><h4 class="col-lg-12 form-group-header" style="margin: 40px 0; width: 100%"></h4></div>
+    <div class="field item form-group row">
+        <label class="col-form-label col-lg-3 col-md-3  label-align" style="text-align: center"><strong>포트폴리오
+            제목</strong><span
+                class="required">*</span></label>
+        <div class="col-lg-8 col-md-8">
+            <input class="form-control" data-validate-length-range="6" data-validate-words="2"
+                   data-parsley-minlength="15" data-parsley-maxlength="30" data-parsley-trigger="keyup"
+                   data-parsley-validation-threshold="1"
+                   name="portTitle" placeholder="예) SpringBoot를 활용한 쇼핑몰 플랫폼 구축" autocomplete="off"
+                   required="required"
+                   th:value="${getProjectInfo != null}?${getProjectInfo.projectName}:''">
+        </div>
+    </div>
+
+    <div class="field item form-group row">
+        <label class="col-form-label col-lg-3 col-md-3  label-align" style="text-align: center">
+            <strong>프로젝트 시작일</strong>
+            <span class="required">*</span></label>
+        <div class="col-lg-8 col-md-8">
+            <input id="startDate" name="portProjectStartDate" class="date-picker form-control"
+                   placeholder="yyyy-mm-dd" type="date" required="required" onfocus="this.type='date'"
+                   onmouseover="this.type='date'" onclick="this.type='date'" onblur="this.type='text'"
+                   th:value="${getProjectInfo != null}?${#dates.format(getProjectInfo.applicationDeadline,'yyyy-MM-dd')}:''">
+        </div>
+    </div>
+
+    <div class="field item form-group row">
+        <label class="col-form-label col-lg-3 col-md-3  label-align" style="text-align: center">
+            <strong>프로젝트 종료일</strong>
+            <span class="required">*</span></label>
+        <div class="col-lg-8 col-md-8">
+            <input id="endDate" name="portProjectEndDate" class="date-picker form-control"
+                   placeholder="yyyy-mm-dd" type="date" required="required" onfocus="this.type='date'"
+                   onmouseover="this.type='date'" onclick="this.type='date'" onblur="this.type='text'"
+                   th:value="${getProjectInfo != null}?${#dates.format(getProjectInfo.endDate,'yyyy-MM-dd')}:''">
+        </div>
+    </div>
+
+    <div class="field item form-group row">
+        <label class="col-form-label col-lg-3 col-md-3  label-align" style="text-align: center"><strong>인원 수</strong><span
+                class="required">*</span></label>
+        <div class="col-lg-2 col-md-2">
+            <input class="form-control" data-validate-length-range="6" data-validate-words="2"
+                   data-parsley-minlength="15" data-parsley-maxlength="30" data-parsley-trigger="keyup"
+                   data-parsley-validation-threshold="1"
+                   name="portMemberCnt" placeholder="예) 5" autocomplete="off"
+                   required="required"
+                   th:value="${getProjectInfo != null}?${getProjectInfo.recruitmentMemberCnt}:''">
+        </div>
+        <div class="col-lg-1 col-md-1" style="text-align: left; margin: auto 0">
+            명
+        </div>
+
+    </div>
+
+    <div class="x_panel col-md-12 col-sm-12" style="margin: 100px 0; width: 100%">
+        <div class="x_title">
+            <label>포트폴리오 상세정보</label>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#editor-one">
+                <div class="btn-group">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i
+                            class="fa fa-font"></i><b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i
+                            class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a data-edit="fontSize 5">
+                                <p style="font-size:17px">Huge</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a data-edit="fontSize 3">
+                                <p style="font-size:14px">Normal</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a data-edit="fontSize 1">
+                                <p style="font-size:11px">Small</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    <a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a>
+                    <a class="btn" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i
+                            class="fa fa-italic"></i></a>
+                    <a class="btn" data-edit="strikethrough" title="Strikethrough"><i
+                            class="fa fa-strikethrough"></i></a>
+                    <a class="btn" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i
+                            class="fa fa-underline"></i></a>
+                </div>
+                <div class="btn-group">
+                    <a class="btn" data-edit="insertunorderedlist" title="Bullet list"><i
+                            class="fa fa-list-ul"></i></a>
+                    <a class="btn" data-edit="insertorderedlist" title="Number list"><i
+                            class="fa fa-list-ol"></i></a>
+                    <a class="btn" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i
+                            class="fa fa-dedent"></i></a>
+                    <a class="btn" data-edit="indent" title="Indent (Tab)"><i class="fa fa-indent"></i></a>
+                </div>
+                <div class="btn-group">
+                    <a class="btn btn-info" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i
+                            class="fa fa-align-left"></i></a>
+                    <a class="btn" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i
+                            class="fa fa-align-center"></i></a>
+                    <a class="btn" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i
+                            class="fa fa-align-right"></i></a>
+                    <a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i
+                            class="fa fa-align-justify"></i></a>
+                </div>
+                <div class="btn-group">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i
+                            class="fa fa-link"></i></a>
+                    <div class="dropdown-menu input-append">
+                        <input class="span2" placeholder="URL" type="text" data-edit="createLink">
+                        <button class="btn" type="button">Add</button>
+                    </div>
+                    <a class="btn" data-edit="unlink" title="Remove Hyperlink"><i class="fa fa-cut"></i></a>
+                </div>
+                <div class="btn-group">
+                    <label class="custom-file-label" id="file-label" for="file-upload">IMAGE UPLOAD</label>
+                    <input type="file" name="file" id="file-upload" multiple="multiple">
+                </div>
+                <div class="btn-group">
+                    <a class="btn" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="fa fa-undo"></i></a>
+                    <a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i
+                            class="fa fa-repeat"></i></a>
+                </div>
+            </div>
+
+
+            <div id="editor-one" name="portDescription" class="editor-wrapper"></div>
+
+            <textarea name="portDescription" id="portDescription" style="display:none;"></textarea>
+
+            <textarea name="detailHtml" id="detailHtml" style="display:none;"></textarea>
+            <br/>
+            <!--<b id="fileEA">0</b><span>개의 문서 파일 선택</span>-->
+            <div class="ln_solid"></div>
+            <div id="elseFile"></div>
+        </div>
+    </div>
+
+
+   <!-- <div class="form-group control-group row">
+        <label class="control-label col-md-3 col-sm-3">Skill Tags</label>
+        <div class="col-md-9 col-sm-9 ">
+            <input id="tags_1" type="text" class="tags form-control" value=""/>
+            <div id="suggestions-container"
+                 style="position: relative; float: left; width: 250px; margin: 10px;">
+                <input type="hidden" id="portSkillTag" name="portSkillTag" autocomplete="off"
+                       th:value="${getProjectInfo != null}?${getProjectInfo.skillHashTag}:''">
+            </div>
+        </div>
+    </div>-->
+
+    <!-- 첨부파일 : <input type="file" class="custom-input" name="file" id="file-upload" multiple="multiple">
+     <label class="current-file-label" for="file-upload"></label>-->
+
+
+    <div class="form-group">
+        <input type="submit" id="addPortfolio-btn" class="btn btn-outline-primary col-12" value="등록완료"/>
+    </div>
+</form>
+</div>
+</body>
+
+
+<script type="text/javascript">
+
+    $('#addPortfolio-btn').on('click', function () {
+
+        // let imgChild = ;
+
+        $.each($('#editor-one').children('img'), function (index, elem) {
+            alert($(elem).attr('src', '/resources/uploadImg/' + $(elem).data('filename')))
+        })
+
+
+        $('#detailHtml').val($('#editor-one').html());
+        $('#portDescription').val($('#editor-one').text())
+
+
+        $('#portSkillTag').val($('.tag span').text());
+
+        $('#ddPortfolioForm').submit();
+    })
+
+    let sel_files = [];
+
+    $("#file-upload").on("change", function handleImgsFilesSelect(e) {
+        let files = e.target.files;
+        let filesArr = Array.prototype.slice.call(files);
+
+        $("#elseFile").empty();
+        for (let i = 0; i < files.length; i++) {
+            if (!checkExtension(files[i].name, files[i].size)) {
+                return false;
+            }
+        }
+        $('#file-label').text(files.length + "개 파일 선택")
+        $('#fileEA').text('0')
+
+        filesArr.forEach(function (f) {
+            if (f.type.match("image.*")) {
+                sel_files.push(f);
+
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    let img_html = "<img src=\"" + e.target.result + "\" data-filename=" + f.name + "\" />";
+                    $("#editor-one").append(img_html);
+                }
+                reader.readAsDataURL(f);
+            } else {
+                let fileName = f.name;
+                $('#fileEA').text(files.length);
+                $("#elseFile").append(fileName);
+
+            }
+
+        });
+    });
+
+    function checkExtension(fileName, fileSize) {
+
+        let regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
+        let maxSize = 41943040;  //40MB
+
+        if (fileSize >= maxSize) {
+            alert('파일 사이즈 초과');
+            $("input[type='file']").val("");  //파일 초기화
+            return false;
+        }
+
+        if (regex.test(fileName)) {
+            alert('업로드 불가능한 파일이 있습니다.');
+            $("input[type='file']").val("");  //파일 초기화
+            return false;
+        }
+        return true;
+    }
+</script>
+
+</html>

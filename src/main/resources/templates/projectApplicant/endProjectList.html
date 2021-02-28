@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	
+	<link rel="stylesheet" href="/resources/css/additional.css">
+	<!--  /////////////////////// JQuery //////////////////////// -->
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="/js/bpopup/jquery.bpopup.min.js"></script>
+    
+	<!--  ////////////////////// JavaScript /////////////////////// -->
+	<script type="text/javascript">
+	$(function () {
+        $("input[type=radio][name=options_1]").on("click",function () {
+            categoryList();
+        })
+    })
+
+	function categoryList() {
+        let categoryList = new Array();
+
+        $("input[name=options_1]:checked").each(function (i) {
+            categoryList.push("searchConditionA="+$(this).val());
+        })
+        let param = "";
+        categoryList.forEach( element => param+=element+"&");
+
+
+        window.location.replace("/applicant/endProjectList?"+param);
+
+    }
+	
+	function fncGetUserList(currentPage) {
+		$("#currentPage").val(currentPage)
+		$("form").attr("method" , "POST").attr("action" , "/applicant/appliedProjectList").submit();
+	}
+	
+	$(function(){
+    	$('#add-review').on("click", function(){
+    		alert('hi');
+    	});
+    });
+	
+	</script>
+	<style>
+	.box-radio-input input[type="radio"]{
+		display:none;
+	}
+	
+	.box-radio-input input[type="radio"] + span{
+		display:inline-block;
+		background:none;
+		border:1px solid #dfdfdf;  
+		padding:0px 10px;
+		text-align:center;
+		height:35px;
+		line-height:33px;
+		font-weight:500;
+		cursor:pointer;
+	}
+
+	.box-radio-input input[type="radio"]:checked + span{
+		border:1px solid #23a3a7;
+		background:#23a3a7;
+		color:#fff;
+	}
+	</style>	
+	
+<title>endProjectList</title>
+</head>
+<body>
+	<div th:include="topToolBar.html" ></div>
+	<div class="wrapper">
+	<h4 class="display-3">완료한 프로젝트</h4>
+	
+	<div class="row">
+        <div class="category-box col-lg-3">
+            <div class="searchCondition-list" style="display: inline-block; width : 90%;">
+                <div class="sear">
+                    <div>
+						<a href="/applicant/appliedProjectList">신청 프로젝트</a><hr/>
+					</div>
+					<div>
+						<a href="/applicant/endProjectList">완료 프로젝트</a><hr/>
+					</div>			                
+                </div>
+            </div>
+            <div id="line"></div>
+        </div>
+	
+	<div class="card-list-box col-lg-8">	
+	<div class="searchCondition-list">
+		<span style="margin: 0 20px;">기간 별 정렬</span>
+		<span>
+
+			<label class="box-radio-input"><input type="radio" name="options_1" value="1"><span>1개월</span></label>
+			<label class="box-radio-input"><input type="radio" name="options_1" value="2"><span>2개월</span></label>
+			<label class="box-radio-input"><input type="radio" name="options_1" value="3"><span>3개월</span></label>
+
+	    </span>
+	</div>
+
+	<div th:if="${resultPage.totalCount==0}">
+		<center><h4>신청한 프로젝트가 없습니다</h4><hr></center>
+	</div>
+	
+	<div class="project-box" th:each="applicantVO : ${appliedList}" style="width:100%; height:200px;">
+       <div class="card h-100 ">
+         <div class="card-body" style="overflow: hidden;">
+         	<div style="float: left; width: 80%;">
+				<div th:if="${applicantVO.applicantStatus}==6">
+					<span class="badge badge-pill badge-primary">완료</span>
+				</div>
+				<h4 class="card-title">
+				<a th:href="@{/project/getProject(projectNo=${applicantVO.projectVO.projectNo})}" th:text="${applicantVO.projectVO.projectName}"/>
+				</h4>
+			</div>
+			<div th:if="${applicantVO.applicantStatus}==6">
+				<div id="deleteButton" style="float: right; width: 17%;">
+					<button id="add-review" type="button" class="btn btn-success">리뷰작성</button>
+					<div id="applicantNo" style="display:none" th:text="${applicantVO.applicantNo}"/>
+				</div>
+			</div>
+				<div class="card-text" th:text="${applicantVO.projectVO.projectDetail}"></div>
+				<div style="float: right; width: 17%;">
+					<span>팀장명</span>
+					<span style="float: right;" th:text="${applicantVO.projectVO.leaderId}"></span><p>
+					<span>마감일</span>
+					<span style="float: right;" th:text="${#dates.format(applicantVO.projectVO.applicationDeadline, 'MM/dd')}"></span><p>
+				</div>
+			</div>
+			<div>
+			<div style="height:32px;"/>
+			</div>
+			<div class="card-footer" >
+                <small class="text-muted">
+                    <th:block th:if="${applicantVO.projectVO.meetingMethod == 1}">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span th:text="${applicantVO.projectVO.meetingLocation}"/>
+                    </th:block>
+                    <th:block th:if="${applicantVO.projectVO.meetingMethod == 2}">
+                        <i class="fas fa-laptop"></i>
+                        <span th:if="${applicantVO.projectVO.meetingMethod == 2}">비대면 (온라인)</span>
+                    </th:block>
+                </small>
+			</div>
+		</div>
+	</div>	
+	</div>
+</div>
+
+	<!-- PageNavigation Start... -->
+<table width="100%" border="0" cellspacing="0" cellpadding="0"	style="margin-top:10px;">
+	<tr>
+		<td align="center">
+		   <input type="hidden" id="currentPage" name="currentPage" value=""/>
+			<span th:if= "${ resultPage.currentPage <= resultPage.pageUnit }" >
+					◀ 이전
+			</span>
+			<span th:if="${ resultPage.currentPage > resultPage.pageUnit }">
+					<a href="javascript:fncGetUserList('${ resultPage.currentPage-1}')">◀ 이전</a>
+			</span>
+			
+			<th:each var="i"  begin="${resultPage.beginUnitPage}" end="${resultPage.endUnitPage}" step="1">
+				<a href="/applicant/endProjectList?SearchVO.currentPage=${i}"><span th:text="${i}"/></a>
+				<a th:href="@{/applicant/appliedProjectList(currentPage=${i})}" th:text="${i}"/>
+			</th:each>
+			
+			<span th:each ="i : ${#numbers.sequence(resultPage.beginUnitPage,resultPage.endUnitPage)}">
+				<a th:href="@{/applicant/endProjectList(currentPage=${i})}" th:text="${i}"/>
+			</span>
+			
+			<span th:if= "${ resultPage.endUnitPage >= resultPage.maxPage }" >
+					이후 ▶
+			</span>
+			<span th:if= "${ resultPage.endUnitPage < resultPage.maxPage }" >
+					<a href="javascript:fncGetUserList('${resultPage.endUnitPage+1}')">이후 ▶</a>
+			</span>
+			
+
+    	</td>
+	</tr>
+</table>
+<!-- PageNavigation End... -->
+
+</body>
+</html>

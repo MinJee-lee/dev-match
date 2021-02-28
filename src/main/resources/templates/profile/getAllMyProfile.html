@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8">
+<head>
+    <title>전체보기 조회</title>
+
+    <style>
+        .account-setting-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 70%;
+            overflow: hidden;
+        }
+
+        .profile_img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+
+</head>
+<body>
+<div th:include="topToolBar.html"></div>
+<div class="container">
+    <input type="hidden" id="userId" name="userId" th:value="${getAllMyProfile.getUserId()}">
+
+    <div class="form-group row">
+        <label class="col-form-label col-md-2 col-sm-2"
+               style="color:#2c3e50; text-align: center; background-color: #fff;">
+
+            <div class="form-group row">
+                <label class="col-form-label col-md-2 col-sm-2"
+                       style="color:#2c3e50; text-align: center; background-color: #fff;">
+                    <div class="account-setting-img" style="margin-left: 3px;">
+                        <th:block th:if="${session.user.profileImg == 'DEFAULTImage.jpg'}">
+                            <img class="profile_img" src="/resources/img/pro_default.png"
+                                 style="width: 150px;height: 150px">
+                        </th:block>
+                        <th:block th:if="${session.user.profileImg != 'DEFAULTImage.jpg'}">
+                            <img class="profile_img" th:src="|/resources/uploadImg/${session.user.profileImg}|"
+                                 style="width: 150px;height: 150px">
+                        </th:block>
+                    </div>
+                </label>
+            </div>
+            <p>
+            <div>
+                <div th:text="${getAllMyProfile.userId}" class="fa fa-user" readonly="readonly"
+                     style="color:#2c3e50; background-color: #fff; border-style: hidden">
+                </div>
+            </div>
+            </p>
+
+            <p>
+            <div>
+                <div th:text="${getAllMyProfile.link}" class="fa fa-tags" readonly="readonly"
+                     style="color:#2c3e50; text-align: left; background-color: #fff; border-style: hidden">
+                </div>
+            </div>
+            </p>
+
+        </label>
+        <div class="col-md-7 col-sm-7">
+            <p>
+                <br/><br/><br/>
+            </p>
+            <div th:text="${getAllMyProfile.selfIntro}" class="form-control" readonly="readonly"
+                 style="color:#2c3e50; text-align: left; background-color: #fff; border-style: hidden">
+            </div>
+        </div>
+    </div>
+
+    <table width="100%" border="0" cellpadding="0" style="margin-top:10px;">
+        <thead>
+        <tr>
+            <th class="column-title" width="100">제목</th>
+            <th class="column-title" width="100">작성날짜</th>
+        </tr>
+
+        <tr>
+            <td colspan="11" bgcolor="808285" height="1"></td>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr class="" th:each="portfolioVO:${getAllMyProfile.portfolio}">
+            <td>
+                <a th:href="@{/port/getPort(portNo=${portfolioVO.portNo})}"
+                   th:text="${portfolioVO.portTitle}"></a></td>
+            <td th:text="${#dates.format(portfolioVO.regDate,'yyyy-MM-dd')}" name="regDate"></td>
+        </tr>
+
+
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	
+	<link rel="stylesheet" href="/resources/css/additional.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.6/css/all.css">
+	<!--  /////////////////////// JQuery //////////////////////// -->
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="/js/bpopup/jquery.bpopup.min.js"></script>
+    
+    <!--  ///////////////////////// CSS ////////////////////////// -->
+    
+    <style>
+    #get_applicant_pop_up { 
+    background-color:#fff;
+    border-radius:15px;
+    color:#000;
+    display:none; 
+    padding:20px;
+    min-width:400px;
+    min-height: 200px;
+    font-size:small;
+	}
+	.b-close{
+    cursor:pointer;
+    position:absolute;
+    right:10px;
+    top:5px;
+	}
+	#table {
+	font-size:small;
+	}
+    </style>
+    
+	<!--  ////////////////////// JavaScript /////////////////////// -->
+	<script type="text/javascript">
+	<!-- 레이어 팝업 -->
+    ;(function($) {
+        $(function() {
+            $('td:nth-child(3)').bind('click', function(e) {
+            	var applicantNo = $(this).find('div').text().trim();
+            	e.preventDefault();
+                // Triggering bPopup when click event is fired
+                $('#get_applicant_pop_up').bPopup({
+                	contentContainer:'.content',
+                    loadUrl: 'getApplicant?applicantNo='+applicantNo //Uses jQuery.load()
+                })
+             });
+        });
+    })(jQuery);
+
+    </script>
+	<title>appllicantList</title>
+</head>
+<body>
+<div th:include="topToolBar.html" ></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	<div class="container">
+	 
+		<div class="collapse navbar-collapse" id="navbarColor02">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="/project/myProject">투두리스트</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/applicant/applicantList">신청서목록</a>
+				</li>
+				
+				<li class="nav-item">
+					<a class="nav-link" style = "diplay:none;"/>
+				</li>
+				
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<div class="wrapper">
+	<h4 class="display-3">프로젝트 참여 요청</h4>
+
+
+
+	
+	<table id="table" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">
+		<tr>
+
+			<th class="column-title" width="100">유저아이디</th>
+			<th class="column-title" width="100">신청일</th>
+			<th class="column-title" width="100"> </th>
+			<th class="column-title" width="100">신청서상태</th>
+		</tr>
+		
+		<tr>
+		<td colspan="11" bgcolor="808285" height="1"></td>
+		</tr>
+		
+		<tbody>
+		<tr class="" th:each="applicantVO : ${applicantList}">
+		<th:block th:if="${applicantVO.applicantStatus}!=5">
+		<th:block th:if="${applicantVO.applicantStatus}!=6">
+			
+			<td class="" th:text="${applicantVO.userId}"></td>
+			<td class="" th:text="${#dates.format(applicantVO.aRegDate, 'yyyy-MM-dd')}"></td>
+			<td class=""><button id="getApplicant" type="button" class="btn btn-primary btn-sm">신청서보기</button>
+						 <div  style="display:none" th:text="${applicantVO.applicantNo}"/>
+			</td>
+			<div th:if="${applicantVO.applicantStatus}==1">
+				<td class="">대기</td>
+			</div>
+			<div th:if="${applicantVO.applicantStatus}==2">
+				<td class="">수락</td>
+			</div>
+			<div th:if="${applicantVO.applicantStatus}==3">
+				<td class="">거절</td>
+			</div>
+			<div th:if="${applicantVO.applicantStatus}==4">
+				<td class="">취소</td>
+			</div>
+		</th:block>
+		</th:block>
+		</tr>
+		</tbody>
+		
+		<div id="get_applicant_pop_up" class="layerpop" background-color: white; style="width: 700px; height: 350px; overflow:auto;">
+			<div class='content'>
+				<include-html target=getApplicant.html/>
+			</div>
+		</div>
+	</table>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <link rel="stylesheet" href="/resources/css/additional.css">
+    <script src="/js/bpopup/jquery.bpopup.min.js"></script>
+
+    <style>
+        /*-----------------------------------------------------------------------*/
+        .reply-box {
+
+            margin: 0 auto;
+            display: grid;
+
+            position: relative;
+            top: auto;
+            left: 0;
+            right: 0;
+            bottom: auto;
+
+            width: 1150px;
+            height: 50px;
+
+            /*grid-template-columns: 200px;*/
+            /*grid-template-columns: 1fr 1fr 1fr;*/
+            /*grid-template-columns: 100px  2fr  1fr;*/
+
+
+            /*grid-template-rows:10px;*/
+            /*grid-template-rows: 200px  1fr 1fr;*/
+
+            /*row-gap: 10px;*/
+
+            grid-template-areas:
+        "header"
+        "main"
+        "button";
+        }
+
+    </style>
+
+    <script type="text/javascript">
+
+        // function del(postNo){
+        //     let chk = confirm("정말 삭제하시겠습니까?");
+        //     if (chk){
+        //         // location.href='/comm/delete?postNo='+(postVO.postNo);
+        //         location.href="deletePost?postNo=(postNo)";
+        //     }
+        // }
+        /*---------------------------------------------------*/
+        // let formObj = $("form[role='form']");
+        //
+        // $("#delete_btn").click(function (){
+        //
+        //     formObj.attr("action", "/comm/deletePost");
+        //     formObj.attr("method", "get");
+        //     formObj.submit();
+        // })
+        /*---------------------------------------------------*/
+
+
+        $(function () {
+            $('#add-reply-btn').on('click', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/comm/addReply',
+                    data: JSON.stringify({
+                        postNo: $('#postNo').val(),
+                        replyContent: $('#replyContent').val()
+                    }),//서버로 보낼 데이터를지정해주는
+                    dataType: 'text',//받아올때 서버에서
+                    contentType: 'application/json',//서버에 데이터를 보낼때
+                    success: function (data) {
+                        alert("댓글 등록 완료");
+                        const replyVO = JSON.parse(data);
+                        const regDate = replyVO.regDate.substring(0, 10);
+
+                        let html =
+                            "<div class=\"card bg-secondary mb-3\" style=\"max-width: 20rem;\">" +
+                            "   <div class=\"card-header\">" + replyVO.replyUserId + "</div>" +
+                            "       <div class=\"card-body\">" +
+                            "           <h4 class=\"card-title\">" + replyVO.replyContent + "</h4>" +
+                            "       <p class=\"card-text\">" + regDate + "</p>" +
+                            "   </div>" +
+                            "</div>"
+
+                        $('#reply-list').append(html);
+                        $('#replyContent').val("");
+                    },
+                    error: function (e) {
+                        alert("댓글 등록 실패" + e)
+                    }
+                })
+
+            })
+
+            $('#update-reply-btn').on('click', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/comm/updateReply',
+                    data: JSON.stringify({
+                        replyNo: $('#replyNo').val(),
+                        replyContent: $('#replyContent').val()
+                    }),//서버로 보낼 데이터를지정해주는
+                    dataType: 'text',//받아올때 서버에서
+                    contentType: 'application/json',//서버에 데이터를 보낼때
+                    success: function (data) {
+                        alert("댓글 수정 완료");
+                        const replyVO = JSON.parse(data);
+                        const regDate = replyVO.regDate.substring(0, 10);
+
+                        let html =
+                            "<div class=\"card bg-secondary mb-3\" style=\"max-width: 20rem;\">" +
+                            "   <div class=\"card-header\">" + replyVO.replyUserId + "</div>" +
+                            "       <div class=\"card-body\">" +
+                            "           <h4 class=\"card-title\">" + replyVO.replyContent + "</h4>" +
+                            "       <p class=\"card-text\">" + regDate + "</p>" +
+                            "   </div>" +
+                            "</div>"
+
+                        $('#reply-list').update(html);
+                        $('#replyContent').val("");
+                    },
+                    error: function (e) {
+                        alert("댓글 수정 실패" + e)
+                    }
+                })
+            })
+
+
+            $('#delete-reply-btn').on('click', function () {
+                if (confirm("댓글을 삭제 하시겠습니까?")) {
+
+                    $.ajax({
+                        type: 'GET',
+                        url: '/comm/deleteReply',
+                        async: "true",
+                        data: {replyNo: $('#replyNo').val()},
+                        dataType: 'text',
+                        contentType: 'application/json',
+                        success: function (data) {
+
+                            let html =
+                                //번호를 가진 html을 찾아서r 그 번호부분ㅇ르 지워야함
+                                "<div class=\"card bg-secondary mb-3\" style=\"max-width: 20rem;\">" +
+                                "   <div class=\"card-header\">" + replyVO.replyUserId + "</div>" +
+                                "       <div class=\"card-body\">" +
+                                "           <h4 class=\"card-title\">" + replyVO.replyContent + "</h4>" +
+                                "       <p class=\"card-text\">" + regDate + "</p>" +
+                                "   </div>" +
+                                "</div>"
+                            alert("댓글 삭제 완료");
+
+
+                        },
+                        error: function (e) {
+                            alert("댓글 삭제 실패" + e)
+                        }
+                    })
+                }
+            })
+
+
+        })
+
+
+    </script>
+    <title>게시물 상세조회</title>
+
+</head>
+<nav th:include="topToolBar.html"></nav>
+<body>
+<form class="container" style="margin-top: 140px">
+    <input type="hidden" name="postNo" id="postNo" th:value="${postVO.postNo}">
+
+    <div class="row">
+        <a href="/comm/getPostList" class="btn btn-outline-secondary mb-3">
+            <i class="fa fa-bars"></i> 목록</a>
+    </div>
+    <div class="row">
+        <h3 class="mr-3" th:text="${postVO.postName}">제목</h3>
+        <div class="mt-2">
+            <a th:href="@{/comm/updatePost(postNo=${postVO.postNo})}">수정</a>
+            <span>&nbsp;|&nbsp;</span>
+            <a th:href="@{/comm/deletePost(postNo=${postVO.postNo})}">삭제</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div th:text="${postVO.userId}">작성자</div>
+        <div id="postdate" th:text="${#dates.format(postVO.regDate, 'yyyy-MM-dd')}">작성날짜</div>
+    </div>
+    <div class="jumbotron" id="postContent" th:text="${postVO.postContent}"/>
+
+    <div class="get_post_btn" align="right">
+        <a th:href="@{/comm/updatePost(postNo=${postVO.postNo})}">수정</a>
+        <a th:href="@{/comm/deletePost(postNo=${postVO.postNo})}">삭제</a>
+
+    </div>
+    <!--    </div>-->
+</form>
+
+<!--에이작스 포스트방식으로 댓글 리퀘스트-->
+<form class="reply-box">
+    <!--    <div class="reply-box">-->
+    <h5 id="reply-list">댓글</h5>
+    <div th:each="replyVO:${postVO.postReply}" class="card-secondary mb-3" style="...">
+        <input type="hidden" name="replyNo" id="replyNo" th:value="${replyVO.replyNo}">
+        <div th:text="${replyVO.replyUserId}" class="card-header"></div>
+        <div class="card-body">
+            <h4 th:text="${replyVO.replyContent}" class="card-title"></h4>
+            <p th:text="${#dates.format(replyVO.regDate, 'yyyy-MM-dd')}" class="card-text"></p>
+            <button type="button" id="update-reply-btn" class="btn btn-primary">수정</button>
+            <button type="button" id='delete-reply-btn' class="btn btn-primary">삭제</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="card-header">
+            <img class="profile-image float-left"
+                 th:src="|/resources/uploadImg/${session.user.profileImg}|"
+                 alt="profile_img">
+            <h5 class="float-left mt-1 ml-2 mb-0" th:text="${session.user.userId}"></h5>
+            <div class="float-right">
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <a id="kakao" href="javascript:;" class="btn btn-secondary"><i
+                            class="fa fa-comment"></i></a>
+                    <a id="facebook" class="btn btn-secondary"><i class="fa fa-facebook"></i></a>
+                    <a id="twitter" class="btn btn-secondary"><i class="fa fa-twitter"></i></a>
+                    <a id="share" class="btn btn-secondary"><i class="fa fa-plus"></i></a>
+                </div>
+            </div>
+            <input class="form-control" id="replyContent" rows="3" style="..."></input>
+            <button type="button" id="add-reply-btn" class="btn btn-primary">작성</button>
+        </div>
+    </div>
+
+    <!--    </div>-->
+</form>
+
+</body>
+
+</html>

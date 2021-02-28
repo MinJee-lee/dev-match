@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	
+	<!--  ////////////////////// Bootstrap /////////////////////// -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" >
+	
+	<!--  /////////////////////// JQuery //////////////////////// -->
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="/js/bpopup/jquery.bpopup.min.js"></script>
+    
+    <!--  ///////////////////////// CSS ////////////////////////// -->
+    <style>
+    #add_applicant_get_pop_up { 
+    background-color:#fff;
+    border-radius:15px;
+    color:#000;
+    display:none; 
+    padding:20px;
+    min-width:400px;
+    min-height: 200px;
+	}
+	.b-close{
+    cursor:pointer;
+    position:absolute;
+    right:10px;
+    top:5px;
+	}
+    </style>
+    
+	<!--  ////////////////////// JavaScript /////////////////////// -->
+	<script type="text/javascript">
+	
+	<!-- 레이어 팝업 -->
+    ;(function($) {
+         // DOM Ready
+        $(function() {
+            // Binding a click event
+            // From jQuery v.1.7.0 use .on() instead of .bind()
+            $('#add_applicant_get').bind('click', function(e) {
+                // Prevents the default action to be triggered. 
+                e.preventDefault();
+                // Triggering bPopup when click event is fired
+                $('#add_applicant_get_pop_up').bPopup();
+            });
+        });
+    })(jQuery);
+
+    
+    $(function(){
+    	$('#add_applicant_post').on("click", function(){
+    		$("#detailForm").submit();
+    	});
+    });
+    </script>
+	<title>addApllicant</title>
+</head>
+
+<body>
+	<!-- Button that triggers the popup -->
+	<button id="add_applicant_get" class="btn btn-default">신청서 등록</button>
+	<!-- Element to pop up -->
+	<div id="add_applicant_get_pop_up" class="layerpop" background-color: white; style="width: 700px; height: 350px; overflow:auto;">
+	<form id="detailForm" method="post" th:action="@{/applicant/addApplicant?projectVO.projectNo=1}" th:object="${applicantVO}">
+	    <h2><label for="Title" class="control-label">신   청   서</label></h2>
+	    <br>
+	    
+	    <div class="row form-group col-xs-12">
+		<label for="projectName" class="control-label">Q1.팀장이 등록한 질문</label>
+		<input type="text" class="form-control" id="applicantAnswerA" name="applicantAnswerA" placeholder="1번대답" ></p>
+		
+		<label for="projectName" class="control-label">Q2.팀장이 등록한 질문</label>
+		<input type="text" class="form-control" id="applicantAnswerB" name="applicantAnswerB" placeholder="2번대답" ></p>
+		 	
+		<label for="projectName" class="control-label">Q3.팀장이 등록한 질문</label>
+		<input type="text" class="form-control" id="applicantAnswerC" name="applicantAnswerC" placeholder="3번대답" ></p>
+		</div>
+		
+		<div class="form-group">
+			<label for="projectDetail">자기소개</label>
+			<textarea class="form-control" id="introToMember" name="introToMember">
+간단하게 자기소개를 할 수 있습니다.</textarea>
+		</div>
+		
+		<div style='width:100px;float: right;'>
+			<button id="add_applicant_post" class="btn btn-default">신청서 제출</button>
+		</div>
+		</form>
+	</div>
+</body>
+</html>
