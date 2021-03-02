@@ -1,6 +1,7 @@
 ## Developing
 
 <img width="1679" alt="스크린샷 2021-02-24 오후 2 31 14" src="https://user-images.githubusercontent.com/71886066/109613670-d7178e00-7b74-11eb-99b8-23929bfc61c1.png">
+<img width="1157" alt="_2021-01-12__7 18 18" src="https://user-images.githubusercontent.com/71886066/109613901-2a89dc00-7b75-11eb-8548-b2c63e9d0fdf.png">
 
 
 ### Build with
