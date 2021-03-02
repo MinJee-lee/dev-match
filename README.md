@@ -10,12 +10,6 @@
 - myBatis Framework
 - Oracle 11g
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b4e1c612-e451-4559-9c94-10c1bdc362c7/_2021-02-24__2.31.14.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b4e1c612-e451-4559-9c94-10c1bdc362c7/_2021-02-24__2.31.14.png)
-
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/038c8998-cc26-4211-9d1b-d4f572ed1cc6/_2021-01-12__7.18.18.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/038c8998-cc26-4211-9d1b-d4f572ed1cc6/_2021-01-12__7.18.18.png)
-
-클래스별 역활
-
 ### Spring Security
 
 - SecurityConfiguration
