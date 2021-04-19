@@ -6,8 +6,8 @@
 
 ### Build with
 
-- java11
-- js
+- ㅓava11
+- Java Script
 - Spring boot 2.3.x
 - Spring security
 - Spring session(with oracle)
