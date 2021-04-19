@@ -6,7 +6,7 @@
 
 ### Build with
 
-- ㅓava11
+- Java11
 - Java Script
 - Spring boot 2.3.x
 - Spring security
